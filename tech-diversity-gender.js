@@ -86,7 +86,6 @@ function TechDiversityGender() {
         female: this.data.getNum(i, 1),
         male: this.data.getNum(i, 2),
       };
-      console.log(company);
       // Draw the company name in the left margin.
       fill(0);
       noStroke();
