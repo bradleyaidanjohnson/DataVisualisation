@@ -1,61 +1,65 @@
 function TechDiversityRace() {
-
   // Name for the visualisation to appear in the menu bar.
-  this.name = 'Tech Diversity: Race';
+  this.name = "Tech Diversity: Race";
 
   // Each visualisation must have a unique ID with no special
   // characters.
-  this.id = 'tech-diversity-race';
+  this.id = "tech-diversity-race";
 
   // Property to represent whether data has been loaded.
   this.loaded = false;
 
   // Preload the data. This function is called automatically by the
   // gallery when a visualisation is added.
-  this.preload = function() {
+  this.preload = function () {
     var self = this;
     this.data = loadTable(
-      './data/tech-diversity/race-2018.csv', 'csv', 'header',
+      "./data/tech-diversity/race-2018.csv",
+      "csv",
+      "header",
       // Callback function to set the value
       // this.loaded to true.
-      function(table) {
+      function (table) {
         self.loaded = true;
-      });
+      }
+    );
   };
 
-  this.setup = function() {
+  this.setup = function () {
     if (!this.loaded) {
-      console.log('Data not yet loaded');
+      console.log("Data not yet loaded");
       return;
     }
 
     // Create a select DOM element.
-    // this.select = // ???
+    this.select = createSelect();
 
     // Set select position.
-    // ???
+    this.select.position(350, 100);
 
     // Fill the options with all company names.
-    // ???
+    for (var i = 1; i < this.data.getColumnCount(); i++) {
+      this.select.option(this.data.columns[i]);
+    }
   };
 
-    this.destroy = function() {
+  this.destroy = function () {
     this.select.remove();
   };
 
   // Create a new pie chart object.
   this.pie = new PieChart(width / 2, height / 2, width * 0.4);
 
-  this.draw = function() {
+  this.draw = function () {
     if (!this.loaded) {
-      console.log('Data not yet loaded');
+      console.log("Data not yet loaded");
       return;
     }
 
     // Get the value of the company we're interested in from the
     // select item.
     // Use a temporary hard-code example for now.
-    var companyName = 'Facebook';
+    var companyName = this.select.value();
 
     // Get the column of raw data for companyName.
     var col = this.data.getColumn(companyName);
@@ -67,10 +71,10 @@ function TechDiversityRace() {
     var labels = this.data.getColumn(0);
 
     // Colour to use for each category.
-    var colours = ['blue', 'red', 'green', 'pink', 'purple', 'yellow'];
+    var colours = ["blue", "red", "green", "pink", "purple", "yellow"];
 
     // Make a title.
-    var title = 'Employee diversity at ' + companyName;
+    var title = "Employee diversity at " + companyName;
 
     // Draw the pie chart!
     this.pie.draw(col, labels, colours, title);
