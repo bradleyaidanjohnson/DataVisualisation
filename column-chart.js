@@ -6,33 +6,42 @@ function ColumnChart() {
   // characters.
   this.id = "column-chart";
 
+  // Title to display above the plot.
+  this.title = "Column Chart Demo";
+
+  // Names for each axis.
+  this.xAxisLabel = "";
+  this.yAxisLabel = "";
+
+  var marginSize = 35;
+
   // Layout object to store all common plot layout parameters and
   // methods.
   this.layout = {
-    // Margin positions around the plot. Left and bottom margins are
+    marginSize: marginSize,
     // bigger so there is space for axis and tick labels on the canvas.
-    leftMargin: 130,
-    rightMargin: width,
-    topMargin: 30,
-    bottomMargin: height,
+    leftMargin: marginSize * 2,
+    rightMargin: width - marginSize,
+    topMargin: marginSize,
+    bottomMargin: height - marginSize * 2,
     pad: 5,
 
     plotHeight: function () {
       return this.topMargin - this.bottomMargin;
     },
 
+    plotWidth: function () {
+      return this.rightMargin - this.leftMargin;
+    },
+
     // Boolean to enable/disable background grid.
-    grid: false,
+    grid: true,
 
     // Number of axis tick labels to draw so that they are not drawn on
     // top of one another.
     numXTickLabels: 10,
     numYTickLabels: 8,
   };
-
-  // Default visualisation colours.
-  this.femaleColour = color(255, 0, 0);
-  this.maleColour = color(0, 255, 0);
 
   // Property to represent whether data has been loaded.
   this.loaded = false;
@@ -60,10 +69,8 @@ function ColumnChart() {
       return;
     }
 
-    // Draw Female/Male labels at the top of the plot.
-    this.drawCategoryLabels();
-
-    var lineWidth = (width - this.layout.leftMargin) / this.data.getRowCount();
+    this.xAxisLabel = this.data.columns[0];
+    this.yAxisLabel = this.data.columns[1];
 
     var maxHeight = 0;
 
@@ -72,6 +79,31 @@ function ColumnChart() {
         maxHeight = this.data.getNum(i, 1);
       }
     }
+
+    // Draw the title above the plot.
+    this.drawTitle();
+
+    // Draw all y-axis labels.
+    drawYAxisTickLabels(
+      0,
+      maxHeight,
+      this.layout,
+      this.mapValuesToHeight.bind(this),
+      0
+    );
+
+    // Draw x and y axis.
+    drawAxis(this.layout);
+
+    // Draw x and y axis labels.
+    drawAxisLabels(this.xAxisLabel, this.yAxisLabel, this.layout);
+
+    // Draw Female/Male labels at the top of the plot.
+    this.drawCategoryLabels();
+
+    var lineWidth =
+      (this.layout.rightMargin - this.layout.leftMargin) /
+      this.data.getRowCount();
 
     maxHeight = maxHeight * 1.1;
 
@@ -89,22 +121,23 @@ function ColumnChart() {
       // Draw the columnValue name on the bottom margin.
       fill(0);
       noStroke();
-      textAlign("right", "bottom");
-      text(columnValue.name, lineX, this.layout.bottomMargin - 20);
+      textAlign("center", "bottom");
+      text(
+        columnValue.name,
+        lineX + lineWidth * 0.5,
+        this.layout.bottomMargin + 20
+      );
 
       // Draw female employees rectangle.
-      fill(this.femaleColour);
+      fill(colorTheme[i % colorTheme.length]);
       rect(
         lineX,
-        // this.mapPercentToHeight(columnValue.value / maxHeight),
         (1 - columnValue.value / maxHeight) *
           (this.layout.bottomMargin - this.layout.topMargin) +
           this.layout.topMargin,
         lineWidth,
-        height -
-          (1 - columnValue.value / maxHeight) *
-            (this.layout.bottomMargin - this.layout.topMargin) +
-          this.layout.topMargin
+        (this.layout.bottomMargin - this.layout.topMargin) *
+          (columnValue.value / maxHeight)
       );
     }
   };
@@ -123,5 +156,35 @@ function ColumnChart() {
   this.mapPercentToHeight = function (percent) {
     // console.log(percent);
     return map(percent, 0, 100, 0, this.layout.plotHeight());
+  };
+
+  this.drawTitle = function () {
+    fill(0);
+    noStroke();
+    textAlign("center", "center");
+
+    text(
+      this.title,
+      this.layout.plotWidth() / 2 + this.layout.leftMargin,
+      this.layout.topMargin - this.layout.marginSize / 2
+    );
+  };
+
+  this.mapValuesToHeight = function (value) {
+    var maxHeight = 0;
+
+    for (var i = 0; i < this.data.getRowCount(); i++) {
+      if (this.data.getNum(i, 1) > maxHeight) {
+        maxHeight = this.data.getNum(i, 1);
+      }
+    }
+
+    return map(
+      value,
+      0,
+      maxHeight,
+      this.layout.bottomMargin, // draw bottom to top from margin
+      this.layout.topMargin
+    );
   };
 }

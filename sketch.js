@@ -1,6 +1,16 @@
 // Global variable to store the gallery object. The gallery object is
 // a container for all the visualisations.
 var gallery;
+var colorTheme = [
+  "#01B8AA",
+  "#374649",
+  "#FD625E",
+  "#F2C80F",
+  "#5F6B6D",
+  "#8AD4EB",
+  "#FE9666",
+  "#A66999",
+];
 
 function setup() {
   // Create a canvas to fill the content div from index.html.
