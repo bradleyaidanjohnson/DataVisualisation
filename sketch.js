@@ -29,6 +29,7 @@ function setup() {
   gallery.addVisual(new ColumnChart());
   gallery.addVisual(new BarChart());
   gallery.addVisual(new ComboChart());
+  gallery.addVisual(new FunnelChart());
 }
 
 function draw() {
