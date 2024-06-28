@@ -96,8 +96,6 @@ function BarChart() {
       (this.layout.bottomMargin - this.layout.topMargin) /
       this.data.getRowCount();
 
-    maxWidth = maxWidth * 1.1;
-
     // Draw all y-axis labels.
     drawXAxisTickLabelsFlip(
       0,

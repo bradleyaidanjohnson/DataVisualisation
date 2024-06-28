@@ -105,8 +105,6 @@ function ColumnChart() {
       (this.layout.rightMargin - this.layout.leftMargin) /
       this.data.getRowCount();
 
-    maxHeight = maxHeight * 1.1;
-
     // Loop over every row in the data.
     for (var i = 0; i < this.data.getRowCount(); i++) {
       // Calculate the x position for each company.

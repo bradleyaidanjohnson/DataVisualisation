@@ -73,6 +73,9 @@ function ComboChart() {
     // Find min and max pay gap for mapping to canvas height.
     this.minPayGap = 0; // Pay equality (zero pay gap).
     this.maxPayGap = max(this.data.getColumn("Returns %"));
+
+    // Dynamically set x tick labels
+    numXTickLabels = this.data.getRowCount() + 1;
   };
 
   // Draw function
@@ -83,13 +86,18 @@ function ComboChart() {
     }
 
     this.xAxisLabel = this.data.columns[0];
-    this.yAxisLabel = this.data.columns[1];
+    this.yAxisLabel1 = this.data.columns[1];
+    this.yAxisLabel2 = this.data.columns[2];
 
     var maxHeight = 0;
+    var maxHeight2 = 0;
 
     for (var i = 0; i < this.data.getRowCount(); i++) {
       if (this.data.getNum(i, 1) > maxHeight) {
         maxHeight = this.data.getNum(i, 1);
+      }
+      if (this.data.getNum(i, 2) > maxHeight2) {
+        maxHeight2 = this.data.getNum(i, 2);
       }
     }
 
@@ -97,19 +105,27 @@ function ComboChart() {
     this.drawTitle();
 
     // Draw all y-axis labels.
-    drawYAxisTickLabels(
+    drawComboYAxisTickLabels(
       0,
       maxHeight,
+      maxHeight2,
       this.layout,
       this.mapValuesToHeight.bind(this),
-      0
+      this.mapValuesToLineHeight.bind(this),
+      0,
+      1
     );
 
     // Draw x and y axis.
-    drawAxis(this.layout);
+    drawComboAxis(this.layout);
 
     // Draw x and y axis labels.
-    drawAxisLabels(this.xAxisLabel, this.yAxisLabel, this.layout);
+    drawComboAxisLabels(
+      this.xAxisLabel,
+      this.yAxisLabel1,
+      this.yAxisLabel2,
+      this.layout
+    );
 
     // Draw Female/Male labels at the top of the plot.
     this.drawCategoryLabels();
@@ -117,8 +133,6 @@ function ComboChart() {
     var lineWidth =
       (this.layout.rightMargin - this.layout.leftMargin) /
       this.data.getRowCount();
-
-    maxHeight = maxHeight * 1.1;
 
     // Loop over every row in the data.
     for (var i = 0; i < this.data.getRowCount(); i++) {
@@ -184,13 +198,15 @@ function ComboChart() {
         var xLabelSkip = ceil(numPoints / this.layout.numXTickLabels);
 
         // Draw the tick label marking the start of the previous year.
-        if (i % xLabelSkip == 0) {
-          drawXAxisTickLabel(
-            previous.year,
-            this.layout,
-            this.mapYearToWidth.bind(this)
-          );
-        }
+        // if (i % xLabelSkip == 0) {
+        //   drawXAxisTickLabelsFlip(
+        //     0,
+        //     1,
+        //     this.layout,
+        //     this.mapYearToWidth.bind(this),
+        //     2
+        //   );
+        // }
       }
 
       // Assign current year to previous year so that it is available
@@ -229,11 +245,15 @@ function ComboChart() {
   };
 
   this.mapValuesToHeight = function (value) {
-    var maxHeight = 0;
+    var maxHeight = this.data.getNum(0, 1);
+    var minHeight = this.data.getNum(0, 1);
 
     for (var i = 0; i < this.data.getRowCount(); i++) {
       if (this.data.getNum(i, 1) > maxHeight) {
         maxHeight = this.data.getNum(i, 1);
+      }
+      if (this.data.getNum(i, 1) < minHeight) {
+        minHeight = this.data.getNum(i, 1);
       }
     }
 
@@ -247,11 +267,15 @@ function ComboChart() {
   };
 
   this.mapValuesToLineHeight = function (value) {
-    var maxHeight = 0;
+    var maxHeight = this.data.getNum(0, 2);
+    var minHeight = this.data.getNum(0, 2);
 
     for (var i = 0; i < this.data.getRowCount(); i++) {
       if (this.data.getNum(i, 2) > maxHeight) {
         maxHeight = this.data.getNum(i, 2);
+      }
+      if (this.data.getNum(i, 1) < minHeight) {
+        minHeight = this.data.getNum(i, 1);
       }
     }
 
