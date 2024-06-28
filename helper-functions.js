@@ -20,7 +20,7 @@ function mean(data) {
   return total / data.length;
 }
 
-function sliceRowNumbers (row, start=0, end) {
+function sliceRowNumbers(row, start = 0, end) {
   var rowData = [];
 
   if (!end) {
@@ -35,7 +35,7 @@ function sliceRowNumbers (row, start=0, end) {
   return rowData;
 }
 
-function stringsToNumbers (array) {
+function stringsToNumbers(array) {
   return array.map(Number);
 }
 
@@ -43,65 +43,95 @@ function stringsToNumbers (array) {
 // Plotting helper functions
 // --------------------------------------------------------------------
 
-function drawAxis(layout, colour=0) {
+function drawAxis(layout, colour = 0) {
   stroke(color(colour));
 
   // x-axis
-  line(layout.leftMargin,
-       layout.bottomMargin,
-       layout.rightMargin,
-       layout.bottomMargin);
+  line(
+    layout.leftMargin,
+    layout.bottomMargin,
+    layout.rightMargin,
+    layout.bottomMargin
+  );
 
   // y-axis
-  line(layout.leftMargin,
-       layout.topMargin,
-       layout.leftMargin,
-       layout.bottomMargin);
+  line(
+    layout.leftMargin,
+    layout.topMargin,
+    layout.leftMargin,
+    layout.bottomMargin
+  );
 }
 
 function drawAxisLabels(xLabel, yLabel, layout) {
   fill(0);
   noStroke();
-  textAlign('center', 'center');
+  textAlign("center", "center");
 
   // Draw x-axis label.
-  text(xLabel,
-       (layout.plotWidth() / 2) + layout.leftMargin,
-       layout.bottomMargin + (layout.marginSize * 1.5));
+  text(
+    xLabel,
+    layout.plotWidth() / 2 + layout.leftMargin,
+    layout.bottomMargin + layout.marginSize * 1.5
+  );
 
   // Draw y-axis label.
   push();
-  translate(layout.leftMargin - (layout.marginSize * 1.5),
-            layout.bottomMargin / 2);
-  rotate(- PI / 2);
+  translate(
+    layout.leftMargin - layout.marginSize * 1.5,
+    layout.bottomMargin / 2
+  );
+  rotate(-PI / 2);
   text(yLabel, 0, 0);
   pop();
 }
 
-function drawYAxisTickLabels(min, max, layout, mapFunction,
-                             decimalPlaces) {
+function drawYAxisTickLabels(min, max, layout, mapFunction, decimalPlaces) {
   // Map function must be passed with .bind(this).
   var range = max - min;
   var yTickStep = range / layout.numYTickLabels;
 
   fill(0);
   noStroke();
-  textAlign('right', 'center');
+  textAlign("right", "center");
 
   // Draw all axis tick labels and grid lines.
   for (i = 0; i <= layout.numYTickLabels; i++) {
-    var value = min + (i * yTickStep);
+    var value = min + i * yTickStep;
     var y = mapFunction(value);
 
     // Add tick label.
-    text(value.toFixed(decimalPlaces),
-         layout.leftMargin - layout.pad,
-         y);
+    text(value.toFixed(decimalPlaces), layout.leftMargin - layout.pad, y);
 
     if (layout.grid) {
       // Add grid line.
       stroke(200);
       line(layout.leftMargin, y, layout.rightMargin, y);
+    }
+  }
+}
+
+function drawXAxisTickLabelsFlip(min, max, layout, mapFunction, decimalPlaces) {
+  // Map function must be passed with .bind(this).
+  var range = max - min;
+  var yTickStep = range / layout.numYTickLabels;
+
+  fill(0);
+  noStroke();
+  textAlign("right", "center");
+
+  // Draw all axis tick labels and grid lines.
+  for (i = 0; i <= layout.numYTickLabels; i++) {
+    var value = min + i * yTickStep;
+    var x = mapFunction(value);
+
+    // Add tick label.
+    text(value.toFixed(decimalPlaces), x, layout.bottomMargin + layout.pad * 3);
+
+    if (layout.grid) {
+      // Add grid line.
+      stroke(200);
+      line(x, layout.topMargin, x, layout.bottomMargin);
     }
   }
 }
@@ -112,19 +142,14 @@ function drawXAxisTickLabel(value, layout, mapFunction) {
 
   fill(0);
   noStroke();
-  textAlign('center', 'center');
+  textAlign("center", "center");
 
   // Add tick label.
-  text(value,
-       x,
-       layout.bottomMargin + layout.marginSize / 2);
+  text(value, x, layout.bottomMargin + layout.marginSize / 2);
 
   if (layout.grid) {
     // Add grid line.
     stroke(220);
-    line(x,
-         layout.topMargin,
-         x,
-         layout.bottomMargin);
+    line(x, layout.topMargin, x, layout.bottomMargin);
   }
 }
