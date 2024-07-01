@@ -30,6 +30,7 @@ function setup() {
   gallery.addVisual(new BarChart());
   gallery.addVisual(new ComboChart());
   gallery.addVisual(new FunnelChart());
+  gallery.addVisual(new DoughnutChartDemo());
 }
 
 function draw() {

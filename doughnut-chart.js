@@ -1,10 +1,11 @@
-function DoughnutChart(x, y, diameter) {
+function PieChart(x, y, diameter) {
+
   this.x = x;
   this.y = y;
   this.diameter = diameter;
   this.labelSpace = 30;
 
-  this.get_radians = function (data) {
+  this.get_radians = function(data) {
     var total = sum(data);
     var radians = [];
 
@@ -15,16 +16,15 @@ function DoughnutChart(x, y, diameter) {
     return radians;
   };
 
-  this.draw = function (data, labels, colours, title) {
+  this.draw = function(data, labels, colours, title) {
+
     // Test that data is not empty and that each input array is the
     // same length.
     if (data.length == 0) {
-      alert("Data has length zero!");
-    } else if (
-      ![labels, colours].every((array) => {
-        return array.length == data.length;
-      })
-    ) {
+      alert('Data has length zero!');
+    } else if (![labels, colours].every((array) => {
+      return array.length == data.length;
+    })) {
       alert(`Data (length: ${data.length})
 Labels (length: ${labels.length})
 Colours (length: ${colours.length})
@@ -48,14 +48,9 @@ Arrays must be the same length!`);
       stroke(0);
       strokeWeight(1);
 
-      arc(
-        this.x,
-        this.y,
-        this.diameter,
-        this.diameter,
-        lastAngle,
-        lastAngle + angles[i] + 0.001
-      ); // Hack for 0!
+      arc(this.x, this.y,
+          this.diameter, this.diameter,
+          lastAngle, lastAngle + angles[i] + 0.001); // Hack for 0!
 
       if (labels) {
         this.makeLegendItem(labels[i], i, colour);
@@ -66,24 +61,24 @@ Arrays must be the same length!`);
 
     if (title) {
       noStroke();
-      textAlign("center", "center");
+      textAlign('center', 'center');
       textSize(24);
       text(title, this.x, this.y - this.diameter * 0.6);
     }
   };
 
-  this.makeLegendItem = function (label, i, colour) {
+  this.makeLegendItem = function(label, i, colour) {
     var x = this.x + 50 + this.diameter / 2;
-    var y = this.y + this.labelSpace * i - this.diameter / 3;
+    var y = this.y + (this.labelSpace * i) - this.diameter / 3;
     var boxWidth = this.labelSpace / 2;
     var boxHeight = this.labelSpace / 2;
 
     fill(colour);
     rect(x, y, boxWidth, boxHeight);
 
-    fill("black");
+    fill('black');
     noStroke();
-    textAlign("left", "center");
+    textAlign('left', 'center');
     textSize(12);
     text(label, x + boxWidth + 10, y + boxWidth / 2);
   };
