@@ -1,4 +1,4 @@
-function DoughnutChart(x, y, diameter) {
+function PieChart(x, y, diameter) {
   this.x = x;
   this.y = y;
   this.diameter = diameter;
