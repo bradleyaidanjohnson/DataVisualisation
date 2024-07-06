@@ -137,6 +137,7 @@ function StackedColumnChart() {
         h =
           (this.layout.bottomMargin - this.layout.topMargin) *
           (columnValue.value / maxHeight);
+        stroke(1);
         rect(x, y, w, h);
         diff += h;
 
@@ -147,6 +148,7 @@ function StackedColumnChart() {
             colorTheme[j % colorTheme.length]
           );
         }
+        stroke(0);
       }
 
       // Draw the columnValue name on the bottom margin.
