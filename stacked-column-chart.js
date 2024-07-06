@@ -139,16 +139,19 @@ function StackedColumnChart() {
           (columnValue.value / maxHeight);
         stroke(1);
         rect(x, y, w, h);
+        strokeWeight(0);
+        fill("#FFFFFF");
+        text(columnValue.value, x + lineWidth / 2, y + h / 2);
+
         diff += h;
 
-        if (j < 1) {
+        if (i < 2) {
           this.makeLegendItem(
             this.data.getString(j, 0),
             j,
             colorTheme[j % colorTheme.length]
           );
         }
-        stroke(0);
       }
 
       // Draw the columnValue name on the bottom margin.
@@ -210,11 +213,10 @@ function StackedColumnChart() {
   };
 
   this.makeLegendItem = function (label, i, colour) {
-    console.log("reached");
-    var x = this.x + 300 + this.diameter / 2;
-    var y = this.y + this.labelSpace * i - this.diameter / 3;
-    var boxWidth = this.labelSpace / 2;
-    var boxHeight = this.labelSpace / 2;
+    var x = this.layout.leftMargin + i * 100;
+    var y = this.layout.bottomMargin + 30;
+    var boxWidth = 20;
+    var boxHeight = 20;
 
     fill(colour);
     rect(x, y, boxWidth, boxHeight);
