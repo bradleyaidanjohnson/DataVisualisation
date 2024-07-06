@@ -137,7 +137,8 @@ function StackedColumnChart() {
         h =
           (this.layout.bottomMargin - this.layout.topMargin) *
           (columnValue.value / maxHeight);
-        stroke(1);
+        stroke(0, 0, 0);
+        strokeWeight(0.5);
         rect(x, y, w, h);
         strokeWeight(0);
         fill("#FFFFFF");
