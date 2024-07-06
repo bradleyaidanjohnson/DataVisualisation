@@ -31,6 +31,7 @@ function setup() {
   gallery.addVisual(new ComboChart());
   gallery.addVisual(new FunnelChart());
   gallery.addVisual(new DoughnutChartDemo());
+  gallery.addVisual(new StackedColumnChart());
 }
 
 function draw() {
