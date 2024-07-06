@@ -32,6 +32,7 @@ function setup() {
   gallery.addVisual(new FunnelChart());
   gallery.addVisual(new DoughnutChartDemo());
   gallery.addVisual(new StackedColumnChart());
+  gallery.addVisual(new StackedBarChart());
 }
 
 function draw() {
