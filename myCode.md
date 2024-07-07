@@ -206,6 +206,458 @@ this.draw = function () {
   // END
 ```
 
+## Stacked Column Chart
+
+```
+// Draw function
+  this.draw = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    }
+
+    // this.xAxisLabel = this.data.columns[0];
+    this.yAxisLabel = this.data.columns[0];
+    //START
+    var maxHeight = 0;
+    var curHeightArray = [];
+
+    for (var i = 1; i < this.data.getColumnCount(); i++) {
+      var curHeight = 0;
+      for (var j = 0; j < this.data.getRowCount(); j++) {
+        curHeight += this.data.getNum(j, i);
+        if (curHeight > maxHeight) {
+          maxHeight = curHeight;
+        }
+      }
+      curHeightArray.push(curHeight);
+    }
+    //END
+
+    // Draw the title above the plot.
+    this.drawTitle();
+
+    // Draw all y-axis labels.
+    drawYAxisTickLabels(
+      0,
+      maxHeight,
+      this.layout,
+      this.mapValuesToHeight.bind(this),
+      0
+    );
+
+    // Draw x and y axis.
+    drawAxis(this.layout);
+
+    // Draw x and y axis labels.
+    drawAxisLabels(this.xAxisLabel, this.yAxisLabel, this.layout);
+
+    // Draw Female/Male labels at the top of the plot.
+    this.drawCategoryLabels();
+
+    var lineWidth =
+      (this.layout.rightMargin - this.layout.leftMargin) /
+      this.data.getColumnCount();
+    //START
+    // Loop over every row in the data.
+    for (var i = 1; i < this.data.getColumnCount(); i++) {
+      diff = 0;
+      for (var j = 0; j < this.data.getRowCount(); j++) {
+        // Calculate the x position
+        var lineX = lineWidth * (i - 1) + this.layout.leftMargin;
+
+        // Create an object that stores data from the current row.
+        var columnValue = {
+          // Add each row's data to the columnValue variable
+          name: this.data.columns[i],
+          value: this.data.getNum(j, i),
+        };
+
+        // Draw each rect
+        fill(colorTheme[j % colorTheme.length]);
+        let x = lineX;
+        let y =
+          (1 - curHeightArray[i - 1] / maxHeight) *
+            (this.layout.bottomMargin - this.layout.topMargin) +
+          this.layout.topMargin +
+          diff;
+        let w = lineWidth;
+        let h =
+          (this.layout.bottomMargin - this.layout.topMargin) *
+          (columnValue.value / maxHeight);
+        stroke(0, 0, 0);
+        strokeWeight(0.5);
+        rect(x, y, w, h);
+        strokeWeight(0);
+        fill("#FFFFFF");
+        text(columnValue.value, x + lineWidth / 2, y + h / 2);
+
+        diff += h;
+
+        if (i < 2) {
+          this.makeLegendItem(
+            this.data.getString(j, 0),
+            j,
+            colorTheme[j % colorTheme.length]
+          );
+        }
+        // END
+      }
+
+      // Draw the columnValue name on the bottom margin.
+      fill(0);
+      noStroke();
+      textAlign("center", "bottom");
+      text(
+        columnValue.name,
+        lineX + lineWidth * 0.5,
+        this.layout.bottomMargin + 20
+      );
+    }
+  };
+    this.makeLegendItem = function (label, i, colour) {
+      // START
+    var x = this.layout.leftMargin + i * 100;
+    var y = this.layout.bottomMargin + 30;
+    // END
+    var boxWidth = 20;
+    var boxHeight = 20;
+
+    fill(colour);
+    rect(x, y, boxWidth, boxHeight);
+
+    fill("black");
+    noStroke();
+    textAlign("left", "center");
+    textSize(12);
+    // START
+    text(label, x + boxWidth + 10, y + boxWidth / 2);
+    // END
+  };
+```
+
+## Stacked Bar Chart
+
+```
+// Draw function
+  this.draw = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    }
+    // START
+    this.xAxisLabel = this.data.columns[1];
+    this.yAxisLabel = this.data.columns[0];
+
+    var maxWidth = 0;
+    var curWidthArray = [];
+
+    for (var i = 1; i < this.data.getColumnCount(); i++) {
+      var curWidth = 0;
+      for (var j = 0; j < this.data.getRowCount(); j++) {
+        curWidth += this.data.getNum(j, i);
+        if (curWidth > maxWidth) {
+          maxWidth = curWidth;
+        }
+      }
+      curWidthArray.push(curWidth);
+    }
+    // END
+    // Draw the title above the plot.
+    this.drawTitle();
+
+    // Draw x and y axis.
+    drawAxis(this.layout);
+
+    // Draw x and y axis labels.
+    drawAxisLabels(this.xAxisLabel, this.yAxisLabel, this.layout);
+
+    // Draw labels at the top of the plot.
+    this.drawCategoryLabels();
+
+    var lineHeight =
+      (this.layout.bottomMargin - this.layout.topMargin) /
+      (this.data.getColumnCount() - 1);
+
+    // Draw all y-axis labels.
+    drawXAxisTickLabelsFlip(
+      0,
+      maxWidth,
+      this.layout,
+      this.mapValuesToWidth.bind(this),
+      0
+    );
+    // START
+    // Loop over every row in the data.
+    for (var i = 1; i < this.data.getColumnCount(); i++) {
+      diff = 0;
+      for (var j = 0; j < this.data.getRowCount(); j++) {
+        // Calculate the x position
+        var lineY = lineHeight * (i - 1) + this.layout.topMargin;
+
+        // Create an object that stores data from the current row.
+        var columnValue = {
+          // Add each row's data to the columnValue variable
+          name: this.data.columns[i],
+          value: this.data.getNum(j, i),
+        };
+
+        // Draw bar.
+        fill(colorTheme[j % colorTheme.length]);
+        let x = this.layout.leftMargin + diff;
+        let y = lineY;
+        let w =
+          (this.layout.rightMargin - this.layout.leftMargin) *
+          (columnValue.value / maxWidth);
+        let h = lineHeight;
+        stroke(0, 0, 0);
+        strokeWeight(0.5);
+        rect(x, y, w, h);
+        strokeWeight(0);
+        fill("#FFFFFF");
+        text(columnValue.value, x + w / 2, y + lineHeight / 2);
+
+        diff += w;
+
+        if (i < 2) {
+          this.makeLegendItem(
+            this.data.getString(j, 0),
+            j,
+            colorTheme[j % colorTheme.length]
+          );
+        }
+        // END
+      }
+
+      // Draw the columnValue name on the left margin.
+      fill(0);
+      noStroke();
+      textAlign("center", "bottom");
+      textSize(8);
+      text(
+        columnValue.name,
+        this.layout.leftMargin - 20,
+        this.layout.topMargin + lineY
+      );
+      textSize(14);
+    }
+  };
+```
+
+## Cluster Column Chart
+
+```
+// Draw function
+  this.draw = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    }
+
+    // this.xAxisLabel = this.data.columns[0];
+    this.yAxisLabel = this.data.columns[0];
+    // START
+    var maxHeight = 0;
+
+    for (var i = 1; i < this.data.getColumnCount(); i++) {
+      for (var j = 0; j < this.data.getRowCount(); j++) {
+        if (this.data.getNum(j, i) > maxHeight) {
+          maxHeight = this.data.getNum(j, i);
+        }
+      }
+    }
+    // END
+
+    // Draw the title above the plot.
+    this.drawTitle();
+
+    // Draw all y-axis labels.
+    drawYAxisTickLabels(
+      0,
+      maxHeight,
+      this.layout,
+      this.mapValuesToHeight.bind(this),
+      0
+    );
+
+    // Draw x and y axis.
+    drawAxis(this.layout);
+
+    // Draw x and y axis labels.
+    drawAxisLabels(this.xAxisLabel, this.yAxisLabel, this.layout);
+
+    // Draw Female/Male labels at the top of the plot.
+    this.drawCategoryLabels();
+
+    var lineWidth =
+      (this.layout.rightMargin - this.layout.leftMargin) /
+      this.data.getColumnCount();
+    // START
+    // Loop over every row in the data.
+    for (var i = 1; i < this.data.getColumnCount(); i++) {
+      diff = 0;
+      for (var j = 0; j < this.data.getRowCount(); j++) {
+        // Calculate the x position
+        var lineX = lineWidth * (i - 1) + this.layout.leftMargin;
+
+        // Create an object that stores data from the current row.
+        var columnValue = {
+          // Add each row's data to the columnValue variable
+          name: this.data.columns[i],
+          value: this.data.getNum(j, i),
+        };
+
+        // Draw each rect
+        fill(colorTheme[j % colorTheme.length]);
+        let x = lineX + (lineWidth / this.data.getRowCount()) * j;
+        let y =
+          (1 - columnValue.value / maxHeight) *
+            (this.layout.bottomMargin - this.layout.topMargin) +
+          this.layout.topMargin;
+        let w = lineWidth / this.data.getRowCount();
+        let h =
+          (this.layout.bottomMargin - this.layout.topMargin) *
+          (columnValue.value / maxHeight);
+        stroke(0, 0, 0);
+        strokeWeight(0.5);
+        rect(x, y, w, h);
+        strokeWeight(0);
+        fill("#FFFFFF");
+        textSize(8);
+        text(columnValue.value, x + w / 2, y + h / 2);
+        textSize(14);
+
+        diff += h;
+
+        if (i < 2) {
+          this.makeLegendItem(
+            this.data.getString(j, 0),
+            j,
+            colorTheme[j % colorTheme.length]
+          );
+        }
+        // END
+      }
+
+      // Draw the columnValue name on the bottom margin.
+      fill(0);
+      noStroke();
+      textAlign("center", "bottom");
+      text(
+        columnValue.name,
+        lineX + lineWidth * 0.5,
+        this.layout.bottomMargin + 20
+      );
+    }
+  };
+```
+
+## Cluster Bar Chart
+
+```
+// Draw function
+  this.draw = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    }
+
+    this.xAxisLabel = this.data.columns[1];
+    this.yAxisLabel = this.data.columns[0];
+    // START
+    var maxWidth = 0;
+
+    for (var i = 1; i < this.data.getColumnCount(); i++) {
+      for (var j = 0; j < this.data.getRowCount(); j++) {
+        if (this.data.getNum(j, i) > maxWidth) {
+          maxWidth = this.data.getNum(j, i);
+        }
+      }
+    }
+    // END
+
+    // Draw the title above the plot.
+    this.drawTitle();
+
+    // Draw x and y axis.
+    drawAxis(this.layout);
+
+    // Draw x and y axis labels.
+    drawAxisLabels(this.xAxisLabel, this.yAxisLabel, this.layout);
+
+    // Draw labels at the top of the plot.
+    this.drawCategoryLabels();
+
+    var lineHeight =
+      (this.layout.bottomMargin - this.layout.topMargin) /
+      (this.data.getColumnCount() - 1);
+
+    // Draw all y-axis labels.
+    drawXAxisTickLabelsFlip(
+      0,
+      maxWidth,
+      this.layout,
+      this.mapValuesToWidth.bind(this),
+      0
+    );
+    // START
+    // Loop over every row in the data.
+    for (var i = 1; i < this.data.getColumnCount(); i++) {
+      diff = 0;
+      for (var j = 0; j < this.data.getRowCount(); j++) {
+        // Calculate the x position
+        var lineY = lineHeight * (i - 1) + this.layout.topMargin;
+
+        // Create an object that stores data from the current row.
+        var columnValue = {
+          // Add each row's data to the columnValue variable
+          name: this.data.columns[i],
+          value: this.data.getNum(j, i),
+        };
+
+        // Draw bar.
+        fill(colorTheme[j % colorTheme.length]);
+        let x = this.layout.leftMargin;
+        let y = lineY + (lineHeight / this.data.getRowCount()) * j;
+        let w =
+          (this.layout.rightMargin - this.layout.leftMargin) *
+          (columnValue.value / maxWidth);
+        let h = lineHeight / this.data.getRowCount();
+        stroke(0, 0, 0);
+        strokeWeight(0.5);
+        rect(x, y, w, h);
+        strokeWeight(0);
+        fill("#FFFFFF");
+        textSize(9);
+        textAlign("center", "center");
+        text(columnValue.value, x + w / 2, y + h / 2);
+        textSize(14);
+
+        if (i < 2) {
+          this.makeLegendItem(
+            this.data.getString(j, 0),
+            j,
+            colorTheme[j % colorTheme.length]
+          );
+        }
+      }
+      // END
+
+      // Draw the columnValue name on the left margin.
+      fill(0);
+      noStroke();
+      textAlign("center", "bottom");
+      textSize(8);
+      text(
+        columnValue.name,
+        this.layout.leftMargin - 20,
+        this.layout.topMargin + lineY
+      );
+      textSize(14);
+    }
+  };
+```
+
 ## Combo Chart
 
 ```
