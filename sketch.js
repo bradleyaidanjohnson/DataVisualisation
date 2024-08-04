@@ -35,6 +35,7 @@ function setup() {
   gallery.addVisual(new ClusterColumnChart());
   gallery.addVisual(new StackedBarChart());
   gallery.addVisual(new ClusterBarChart());
+  gallery.addVisual(new TreeMapChart());
 }
 
 function draw() {
