@@ -36,6 +36,7 @@ function setup() {
   gallery.addVisual(new StackedBarChart());
   gallery.addVisual(new ClusterBarChart());
   gallery.addVisual(new TreeMapChart());
+  gallery.addVisual(new GaugeChartDemo());
 }
 
 function draw() {

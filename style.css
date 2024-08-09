@@ -1,13 +1,13 @@
-body{
-    font-family: sans-serif
+body {
+  font-family: sans-serif;
 }
 
 .menu-item {
-    width: 250px;
-    height: 50px;
-    border: 1px solid gray;
-    list-style-type: none;
-    padding: 5px;
+  width: 250px;
+  height: 30px;
+  border: 0.5px solid gray;
+  list-style-type: none;
+  padding: 5px;
 }
 
 .container {
@@ -15,9 +15,9 @@ body{
 }
 
 .hover {
-    background: lightgray
+  background: lightgray;
 }
 
-.selected{
-    background: gold
+.selected {
+  background: gold;
 }
