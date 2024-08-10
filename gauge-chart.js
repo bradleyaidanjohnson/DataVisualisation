@@ -4,6 +4,7 @@ function GaugeChart(x, y, diameter) {
   this.diameter = diameter;
   this.labelSpace = 30;
   this.metTarget = false;
+  this.extra = 20;
 
   this.get_radians = function (data) {
     var total = data.max - data.min;
@@ -27,6 +28,8 @@ function GaugeChart(x, y, diameter) {
   };
 
   this.draw = function (data, labels, colours, title) {
+    var dataCopy = JSON.parse(JSON.stringify(data));
+    console.log(dataCopy);
     // https://p5js.org/examples/form-pie-chart.html
 
     var anglesDict = this.get_radians(data);
@@ -47,11 +50,9 @@ function GaugeChart(x, y, diameter) {
       ];
       this.metTarget = true;
     }
-    console.log(angles);
+    // console.log(angles);
     var firstAngle = 180 * (TWO_PI / 2 / 180);
     var lastAngle = firstAngle;
-    // var lastAngle = 0;
-    var colour;
 
     // if (this.metTarget) {
     //   let temp = labels[1];
@@ -65,7 +66,8 @@ function GaugeChart(x, y, diameter) {
         // currColour = [144, 238, 144];
         currColour = [0, 200, 0];
       } else if (this.metTarget && i == 2) {
-        currColour = [0, 200, 0, 200];
+        // currColour = [0, 200, 0, 200];
+        currColour = [0, 200, 255];
       } else if (!this.metTarget && i == 1) {
         currColour = [
           255,
@@ -80,7 +82,7 @@ function GaugeChart(x, y, diameter) {
 
       fill(...currColour);
       stroke(0);
-      strokeWeight(1);
+      strokeWeight(0);
       arc(
         this.x,
         this.y,
@@ -104,12 +106,44 @@ function GaugeChart(x, y, diameter) {
       noStroke();
       textAlign("center", "center");
       textSize(24);
-      text(title, this.x, this.y - this.diameter * 0.6);
+      text(title, this.x, this.y - this.diameter * 0.65);
     }
 
     fill("#FFFFFF");
     stroke(0);
     circle(this.x, this.y, this.diameter / 2);
+
+    dataLabelCoords = {};
+    for (let key in anglesDict) {
+      // console.log(key);
+      // console.log(anglesDict[key]);
+      tempArray = [
+        this.x +
+          (this.diameter / 2 + this.extra) *
+            Math.cos(anglesDict[key] + TWO_PI / 2),
+        this.y +
+          (this.diameter / 2 + this.extra) *
+            Math.sin(anglesDict[key] + TWO_PI / 2),
+      ];
+      dataLabelCoords[key] = tempArray;
+    }
+
+    console.log(dataLabelCoords);
+
+    stroke(255);
+    rect(this.x - this.diameter / 2, this.y, diameter, diameter);
+    stroke(0);
+    strokeWeight(5);
+    line(
+      this.x,
+      this.y,
+      dataLabelCoords.current[0],
+      dataLabelCoords.current[1]
+    );
+
+    for (let key in dataLabelCoords) {
+      text(dataCopy[key], dataLabelCoords[key][0], dataLabelCoords[key][1]);
+    }
   };
 
   this.makeLegendItem = function (label, i, colour) {
