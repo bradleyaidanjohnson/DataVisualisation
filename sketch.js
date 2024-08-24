@@ -28,6 +28,7 @@ function setup() {
   gallery.addVisual(new ClimateChange());
   gallery.addVisual(new ColumnChart());
   gallery.addVisual(new BarChart());
+  gallery.addVisual(new WaterfallChart());
   gallery.addVisual(new ComboChart());
   gallery.addVisual(new FunnelChart());
   gallery.addVisual(new DoughnutChartDemo());

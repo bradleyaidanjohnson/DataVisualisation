@@ -28,6 +28,7 @@ function GaugeChart(x, y, diameter) {
   };
 
   this.draw = function (data, labels, colours, title) {
+    // Deep copy citation needed
     var dataCopy = JSON.parse(JSON.stringify(data));
     console.log(dataCopy);
     // https://p5js.org/examples/form-pie-chart.html
@@ -54,11 +55,11 @@ function GaugeChart(x, y, diameter) {
     var firstAngle = 180 * (TWO_PI / 2 / 180);
     var lastAngle = firstAngle;
 
-    // if (this.metTarget) {
-    //   let temp = labels[1];
-    //   labels[1] = labels[2];
-    //   labels[2] = temp;
-    // }
+    if (this.metTarget) {
+      let temp = labels[1];
+      labels[1] = labels[2];
+      labels[2] = temp;
+    }
 
     for (var i = 0; i < angles.length; i++) {
       var currColour = [0, 211, 0];
@@ -93,7 +94,9 @@ function GaugeChart(x, y, diameter) {
       ); // Hack for 0!
 
       if (labels) {
-        this.makeLegendItem(labels[i], i, currColour);
+        if (labels[i] != "min") {
+          this.makeLegendItem(labels[i], i, currColour);
+        }
       }
       if (angles[i] + firstAngle >= TWO_PI) {
         lastAngle = angles[i] + firstAngle - TWO_PI;
@@ -115,8 +118,7 @@ function GaugeChart(x, y, diameter) {
 
     dataLabelCoords = {};
     for (let key in anglesDict) {
-      // console.log(key);
-      // console.log(anglesDict[key]);
+      // coordinate location citation needed
       tempArray = [
         this.x +
           (this.diameter / 2 + this.extra) *
