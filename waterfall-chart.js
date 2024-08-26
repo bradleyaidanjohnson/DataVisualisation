@@ -14,7 +14,10 @@ function WaterfallChart() {
   this.yAxisLabel = "";
 
   var marginSize = 35;
-  var lineWidth = 0;
+  this.lineWidth = 0;
+  this.maxHeight = 0;
+  this.minHeight = 0;
+  this.heightVal = 0;
 
   // Layout object to store all common plot layout parameters and
   // methods.
@@ -52,8 +55,8 @@ function WaterfallChart() {
   this.preload = function () {
     var self = this;
     this.data = loadTable(
-      "./data/new-data/waterfall.csv",
-      // "./data/new-data/waterfall-cat.csv",
+      // "./data/new-data/waterfall.csv",
+      "./data/new-data/waterfall-cat.csv",
       "csv",
       "header",
       // Callback function to set the value
@@ -66,49 +69,64 @@ function WaterfallChart() {
 
   // Draw function
   this.draw = function () {
+    this.maxHeight = 0;
+    this.minHeight = 0;
     if (!this.loaded) {
       console.log("Data not yet loaded");
       return;
     }
-
-    var maxHeight = 0;
     var colCount = this.data.getColumnCount();
     var rowCount = this.data.getRowCount();
     // console.log(colCount);
+    var currVal = 0;
 
     if (colCount === 2) {
       var colValues = this.data.getColumn(this.data.columns[1]);
-      var colNums = colValues.map(Number);
+      // var colNums = colValues.map(Number);
 
       this.xAxisLabel = this.data.columns[0];
       this.yAxisLabel = this.data.columns[1];
 
-      maxHeight = colNums.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue;
-      }, 0);
+      for (var i = 0; i < this.data.getRowCount(); i++) {
+        currVal = currVal + this.data.getNum(i, 1);
+        if (currVal > this.maxHeight) {
+          this.maxHeight = currVal;
+        }
+        if (currVal < this.minHeight) {
+          this.minHeight = currVal;
+        }
+      }
+
+      this.heightVal = this.maxHeight - this.minHeight;
     } else if (colCount > 2) {
       this.xAxisLabel = this.data.columns[0];
       this.yAxisLabel = "Values";
-
+      // var rowMax = 0
+      // var rowMin = 0
+      var currRowValue = 0;
       for (var i = 0; i < rowCount; i++) {
-        var sum = 0;
         for (var j = 1; j < colCount; j++) {
-          if (this.data.getNum(i, j) > 0) {
-            sum = sum + this.data.getNum(i, j);
+          currRowValue = this.data.getNum(i, j) + currRowValue;
+          if (currRowValue > this.maxHeight) {
+            this.maxHeight = currRowValue;
+          }
+          if (currRowValue < this.minHeight) {
+            this.minHeight = currRowValue;
           }
         }
-        if (sum > maxHeight) {
-          maxHeight = sum;
-        }
+        currRowValue = 0;
       }
     }
+    this.heightVal = this.maxHeight - this.minHeight;
+
+    console.log(this.heightVal);
     // Draw the title above the plot.
     this.drawTitle();
 
     // Draw all y-axis labels.
     drawYAxisTickLabels(
       0,
-      maxHeight,
+      this.maxHeight,
       this.layout,
       this.mapValuesToHeight.bind(this),
       0
@@ -149,7 +167,7 @@ function WaterfallChart() {
           this.layout.bottomMargin + 20
         );
         columnTop =
-          (1 - columnValue.value / maxHeight) *
+          (1 - columnValue.value / this.maxHeight) *
             (this.layout.bottomMargin - this.layout.topMargin) +
           this.layout.topMargin -
           this.layout.bottomMargin +
@@ -166,7 +184,7 @@ function WaterfallChart() {
           columnTop,
           this.lineWidth,
           (this.layout.bottomMargin - this.layout.topMargin) *
-            (columnValue.value / maxHeight)
+            (columnValue.value / this.maxHeight)
         );
       }
     } else if (colCount > 2) {
@@ -204,7 +222,7 @@ function WaterfallChart() {
             this.layout.bottomMargin + 30
           );
           columnTop =
-            (1 - columnValue.value / maxHeight) *
+            (1 - columnValue.value / this.maxHeight) *
               (this.layout.bottomMargin - this.layout.topMargin) +
             this.layout.topMargin -
             this.layout.bottomMargin +
@@ -221,7 +239,7 @@ function WaterfallChart() {
             columnTop,
             this.lineWidth,
             (this.layout.bottomMargin - this.layout.topMargin) *
-              (columnValue.value / maxHeight)
+              (columnValue.value / this.maxHeight)
           );
         }
         // Draw a total rect
@@ -252,12 +270,12 @@ function WaterfallChart() {
 
         rect(
           lineX,
-          (1 - columnValue.value / maxHeight) *
+          (1 - columnValue.value / this.maxHeight) *
             (this.layout.bottomMargin - this.layout.topMargin) +
             this.layout.topMargin,
           this.lineWidth,
           (this.layout.bottomMargin - this.layout.topMargin) *
-            (columnValue.value / maxHeight)
+            (columnValue.value / this.maxHeight)
         );
       }
     }
@@ -292,35 +310,15 @@ function WaterfallChart() {
   };
 
   this.mapValuesToHeight = function (value) {
-    var maxHeight = 0;
     var columnCount = this.data.getColumnCount();
     var rowsCount = this.data.getRowCount();
 
-    if (columnCount === 2) {
-      var colValues = this.data.getColumn(this.data.columns[1]);
-      var colNums = colValues.map(Number);
-
-      maxHeight = colNums.reduce((accumulator, currentValue) => {
-        return accumulator + currentValue;
-      }, 0);
-    } else if (columnCount > 2) {
-      for (var i = 0; i < rowsCount; i++) {
-        var sum = 0;
-        for (var j = 1; j < columnCount; j++) {
-          if (this.data.getNum(i, j) > 0) {
-            sum = sum + this.data.getNum(i, j);
-          }
-        }
-        if (sum > maxHeight) {
-          maxHeight = sum;
-        }
-      }
-    }
+    console.log(this.maxHeight);
 
     return map(
       value,
       0,
-      maxHeight,
+      this.maxHeight,
       this.layout.bottomMargin, // draw bottom to top from margin
       this.layout.topMargin
     );
