@@ -63,6 +63,34 @@ function drawAxis(layout, colour = 0) {
   );
 }
 
+function drawSubZeroAxis(layout, colour = 0, min, max) {
+  stroke(color(colour));
+
+  // rabge = (layout.bottomMargin - layout.topMargin)
+  var range = max - min;
+  var subZero = range - max;
+  var subZeroPerc = subZero / range;
+  var layoutHeight = layout.bottomMargin - layout.topMargin;
+  var subZeroPixels = subZeroPerc * layoutHeight;
+  // console.log(subZero);
+
+  // x-axis
+  line(
+    layout.leftMargin,
+    layout.bottomMargin - subZeroPixels,
+    layout.rightMargin,
+    layout.bottomMargin - subZeroPixels
+  );
+
+  // y-axis
+  line(
+    layout.leftMargin,
+    layout.topMargin,
+    layout.leftMargin,
+    layout.bottomMargin
+  );
+}
+
 function drawComboAxis(layout, colour = 0) {
   stroke(color(colour));
 
@@ -92,6 +120,29 @@ function drawComboAxis(layout, colour = 0) {
 }
 
 function drawAxisLabels(xLabel, yLabel, layout) {
+  fill(0);
+  noStroke();
+  textAlign("center", "center");
+
+  // Draw x-axis label.
+  text(
+    xLabel,
+    layout.plotWidth() / 2 + layout.leftMargin,
+    layout.bottomMargin + layout.marginSize * 1.5
+  );
+
+  // Draw y-axis label.
+  push();
+  translate(
+    layout.leftMargin - layout.marginSize * 1.5,
+    layout.bottomMargin / 2
+  );
+  rotate(-PI / 2);
+  text(yLabel, 0, 0);
+  pop();
+}
+
+function drawSubZeroAxisLabels(xLabel, yLabel, layout, min, max) {
   fill(0);
   noStroke();
   textAlign("center", "center");
@@ -150,6 +201,7 @@ function drawComboAxisLabels(xLabel, yLabel_1, yLabel_2, layout) {
 function drawYAxisTickLabels(min, max, layout, mapFunction, decimalPlaces) {
   // Map function must be passed with .bind(this).
   var range = max - min;
+  // console.log(range);
   var yTickStep = range / layout.numYTickLabels;
 
   fill(0);
@@ -159,6 +211,7 @@ function drawYAxisTickLabels(min, max, layout, mapFunction, decimalPlaces) {
   // Draw all axis tick labels and grid lines.
   for (i = 0; i <= layout.numYTickLabels; i++) {
     var value = min + i * yTickStep;
+    // console.log(value);
     var y = mapFunction(value);
 
     // Add tick label.
