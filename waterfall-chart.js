@@ -14,6 +14,7 @@ function WaterfallChart() {
   this.yAxisLabel = "";
 
   var marginSize = 35;
+  var lineWidth = 0;
 
   // Layout object to store all common plot layout parameters and
   // methods.
@@ -51,8 +52,8 @@ function WaterfallChart() {
   this.preload = function () {
     var self = this;
     this.data = loadTable(
-      // "./data/new-data/waterfall.csv",
-      "./data/new-data/waterfall-cat.csv",
+      "./data/new-data/waterfall.csv",
+      // "./data/new-data/waterfall-cat.csv",
       "csv",
       "header",
       // Callback function to set the value
@@ -70,9 +71,6 @@ function WaterfallChart() {
       return;
     }
 
-    this.xAxisLabel = this.data.columns[0];
-    this.yAxisLabel = this.data.columns[1];
-
     var maxHeight = 0;
     var colCount = this.data.getColumnCount();
     var rowCount = this.data.getRowCount();
@@ -82,10 +80,16 @@ function WaterfallChart() {
       var colValues = this.data.getColumn(this.data.columns[1]);
       var colNums = colValues.map(Number);
 
+      this.xAxisLabel = this.data.columns[0];
+      this.yAxisLabel = this.data.columns[1];
+
       maxHeight = colNums.reduce((accumulator, currentValue) => {
         return accumulator + currentValue;
       }, 0);
     } else if (colCount > 2) {
+      this.xAxisLabel = this.data.columns[0];
+      this.yAxisLabel = "Values";
+
       for (var i = 0; i < rowCount; i++) {
         var sum = 0;
         for (var j = 1; j < colCount; j++) {
@@ -98,9 +102,6 @@ function WaterfallChart() {
         }
       }
     }
-
-    console.log(maxHeight);
-
     // Draw the title above the plot.
     this.drawTitle();
 
@@ -119,10 +120,10 @@ function WaterfallChart() {
     // Draw x and y axis labels.
     drawAxisLabels(this.xAxisLabel, this.yAxisLabel, this.layout);
 
-    // Draw Female/Male labels at the top of the plot.
+    // Draw labels at the top of the plot.
     this.drawCategoryLabels();
     if (colCount === 2) {
-      var lineWidth =
+      this.lineWidth =
         (this.layout.rightMargin - this.layout.leftMargin) /
         this.data.getRowCount();
 
@@ -130,7 +131,7 @@ function WaterfallChart() {
       var columnTop = this.layout.bottomMargin;
       for (var i = 0; i < this.data.getRowCount(); i++) {
         // Calculate the x position for each company.
-        var lineX = lineWidth * i + this.layout.leftMargin;
+        var lineX = this.lineWidth * i + this.layout.leftMargin;
 
         // Create an object that stores data from the current row.
         var columnValue = {
@@ -144,7 +145,7 @@ function WaterfallChart() {
         textAlign("center", "bottom");
         text(
           columnValue.name,
-          lineX + lineWidth * 0.5,
+          lineX + this.lineWidth * 0.5,
           this.layout.bottomMargin + 20
         );
         columnTop =
@@ -163,15 +164,15 @@ function WaterfallChart() {
         rect(
           lineX,
           columnTop,
-          lineWidth,
+          this.lineWidth,
           (this.layout.bottomMargin - this.layout.topMargin) *
             (columnValue.value / maxHeight)
         );
       }
     } else if (colCount > 2) {
-      var lineWidth =
+      this.lineWidth =
         (this.layout.rightMargin - this.layout.leftMargin) /
-        (this.data.getRowCount() * this.data.getRowCount());
+        (this.data.getRowCount() * this.data.getColumnCount());
 
       for (var i = 0; i < this.data.getRowCount(); i++) {
         // Loop over every row in the data.
@@ -181,7 +182,7 @@ function WaterfallChart() {
           // i = row, j = column
           // Calculate the x position for each company.
           var lineX =
-            lineWidth * ((i + 1) * colCount - (colCount - (j - 1))) +
+            this.lineWidth * ((i + 1) * colCount - (colCount - (j - 1))) +
             this.layout.leftMargin;
 
           // Create an object that stores data from the current row.
@@ -197,10 +198,10 @@ function WaterfallChart() {
           fill(0);
           noStroke();
           textAlign("center", "bottom");
-          text(
+          this.drawRotatedLabel(
             columnValue.name,
-            lineX + lineWidth * 0.5,
-            this.layout.bottomMargin + 20
+            lineX + this.lineWidth * 0.5 - 15,
+            this.layout.bottomMargin + 30
           );
           columnTop =
             (1 - columnValue.value / maxHeight) *
@@ -218,14 +219,14 @@ function WaterfallChart() {
           rect(
             lineX,
             columnTop,
-            lineWidth,
+            this.lineWidth,
             (this.layout.bottomMargin - this.layout.topMargin) *
               (columnValue.value / maxHeight)
           );
         }
         // Draw a total rect
         var lineX =
-          lineWidth * ((i + 1) * colCount - (colCount - (j - 1))) +
+          this.lineWidth * ((i + 1) * colCount - (colCount - (j - 1))) +
           this.layout.leftMargin;
 
         // Create an object that stores data from the current row.
@@ -237,10 +238,10 @@ function WaterfallChart() {
         fill(0);
         noStroke();
         textAlign("center", "bottom");
-        text(
+        this.drawRotatedLabel(
           columnValue.name,
-          lineX + lineWidth * 0.5,
-          this.layout.bottomMargin + 20
+          lineX + this.lineWidth * 0.5 - 15,
+          this.layout.bottomMargin + 30
         );
         // Draw rectangle
         if (columnValue.value < 0) {
@@ -254,7 +255,7 @@ function WaterfallChart() {
           (1 - columnValue.value / maxHeight) *
             (this.layout.bottomMargin - this.layout.topMargin) +
             this.layout.topMargin,
-          lineWidth,
+          this.lineWidth,
           (this.layout.bottomMargin - this.layout.topMargin) *
             (columnValue.value / maxHeight)
         );
@@ -292,16 +293,27 @@ function WaterfallChart() {
 
   this.mapValuesToHeight = function (value) {
     var maxHeight = 0;
+    var columnCount = this.data.getColumnCount();
+    var rowsCount = this.data.getRowCount();
 
-    for (var i = 0; i < this.data.getRowCount(); i++) {
-      if (this.data.getNum(i, 1) > maxHeight) {
-        maxHeight = this.data.getNum(i, 1);
-      }
-    }
+    if (columnCount === 2) {
+      var colValues = this.data.getColumn(this.data.columns[1]);
+      var colNums = colValues.map(Number);
 
-    for (var i = 0; i < this.data.getRowCount(); i++) {
-      if (this.data.getNum(i, 1) > maxHeight) {
-        maxHeight = this.data.getNum(i, 1);
+      maxHeight = colNums.reduce((accumulator, currentValue) => {
+        return accumulator + currentValue;
+      }, 0);
+    } else if (columnCount > 2) {
+      for (var i = 0; i < rowsCount; i++) {
+        var sum = 0;
+        for (var j = 1; j < columnCount; j++) {
+          if (this.data.getNum(i, j) > 0) {
+            sum = sum + this.data.getNum(i, j);
+          }
+        }
+        if (sum > maxHeight) {
+          maxHeight = sum;
+        }
       }
     }
 
@@ -312,5 +324,16 @@ function WaterfallChart() {
       this.layout.bottomMargin, // draw bottom to top from margin
       this.layout.topMargin
     );
+  };
+  this.drawRotatedLabel = function (textString, xPos, yPos) {
+    push();
+    translate(xPos, yPos);
+    rotate((-PI / 4) * 1);
+
+    textAlign("center", "left");
+    textSize(min(8, int(this.lineWidth / 3)));
+    text(textString, 0, 0);
+    textSize(12);
+    pop();
   };
 }
