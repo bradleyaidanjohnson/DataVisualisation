@@ -8,11 +8,11 @@ function GaugeChart(x, y, diameter) {
 
   this.get_radians = function (data) {
     var total = data.max - data.min;
-    console.log(total);
+    // console.log(total);
     if (data.current < data.target) {
-      console.log("target not reached");
+      // console.log("target not reached");
     } else {
-      console.log("target reached");
+      // console.log("target reached");
     }
     this.get_radians_value = function (value, max) {
       return (Math.min((value / max) * 360, 360) * TWO_PI) / 2 / 180;
@@ -30,7 +30,7 @@ function GaugeChart(x, y, diameter) {
   this.draw = function (data, labels, colours, title) {
     // Deep copy citation needed
     var dataCopy = JSON.parse(JSON.stringify(data));
-    console.log(dataCopy);
+    // console.log(dataCopy);
     // https://p5js.org/examples/form-pie-chart.html
 
     var anglesDict = this.get_radians(data);
@@ -130,7 +130,7 @@ function GaugeChart(x, y, diameter) {
       dataLabelCoords[key] = tempArray;
     }
 
-    console.log(dataLabelCoords);
+    // console.log(dataLabelCoords);
 
     stroke(255);
     rect(this.x - this.diameter / 2, this.y, diameter, diameter);

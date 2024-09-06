@@ -138,7 +138,7 @@ function TreeMapChart() {
     );
     this.arrangement = [];
     this.squarify(scaledData, [], initialRectangle);
-    console.log(this.arrangement);
+    // console.log(this.arrangement);
     this.drawRectangles();
   };
 

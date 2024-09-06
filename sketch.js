@@ -26,6 +26,7 @@ function setup() {
   gallery.addVisual(new PayGapByJob2017());
   gallery.addVisual(new PayGapTimeSeries());
   gallery.addVisual(new ClimateChange());
+  gallery.addVisual(new AreaChart());
   gallery.addVisual(new ColumnChart());
   gallery.addVisual(new BarChart());
   gallery.addVisual(new WaterfallChart());
