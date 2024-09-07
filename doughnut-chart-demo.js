@@ -56,9 +56,7 @@ function DoughnutChartDemo() {
       return;
     }
 
-    // Get the value of the company we're interested in from the
-    // select item.
-    // Use a temporary hard-code example for now.
+    // Get the value we're interested in from the
     var companyName = this.select.value();
 
     // Get the column of raw data for companyName.

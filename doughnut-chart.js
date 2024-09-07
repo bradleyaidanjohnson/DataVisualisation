@@ -1,4 +1,5 @@
 function DoughnutChart(x, y, diameter) {
+  // Constructor
   this.x = x;
   this.y = y;
   this.diameter = diameter;

@@ -56,9 +56,8 @@ function GaugeChartDemo() {
       return;
     }
 
-    // Get the value of the company we're interested in from the
+    // Get the value we're interested in from the
     // select item.
-    // Use a temporary hard-code example for now.
     var currSelected = this.select.value();
 
     // Get the column of raw data for companyName.
@@ -77,13 +76,10 @@ function GaugeChartDemo() {
     // Copy the row labels from the table (the first item of each row).
     var labels = this.data.getColumn(0);
 
-    // Colour to use for each category.
-    var colours = ["blue", "red", "green", "pink"];
-
     // Make a title.
     var title = "Sales Target " + currSelected;
 
     // Draw the pie chart!
-    this.gauge.draw(colDict, labels, colours, title);
+    this.gauge.draw(colDict, labels, title);
   };
 }
