@@ -15,6 +15,9 @@ function ColumnChart() {
 
   var marginSize = 35;
 
+  // Initialize max height variable
+  this.maxHeight = 0;
+
   // Layout object to store all common plot layout parameters and
   // methods.
   this.layout = {
@@ -69,14 +72,14 @@ function ColumnChart() {
       return;
     }
 
+    // Store labels
     this.xAxisLabel = this.data.columns[0];
     this.yAxisLabel = this.data.columns[1];
 
-    var maxHeight = 0;
-
+    // Set max height to the highest value
     for (var i = 0; i < this.data.getRowCount(); i++) {
-      if (this.data.getNum(i, 1) > maxHeight) {
-        maxHeight = this.data.getNum(i, 1);
+      if (this.data.getNum(i, 1) > this.maxHeight) {
+        this.maxHeight = this.data.getNum(i, 1);
       }
     }
 
@@ -86,7 +89,7 @@ function ColumnChart() {
     // Draw all y-axis labels.
     drawYAxisTickLabels(
       0,
-      maxHeight,
+      this.maxHeight,
       this.layout,
       this.mapValuesToHeight.bind(this),
       0
@@ -97,17 +100,14 @@ function ColumnChart() {
 
     // Draw x and y axis labels.
     drawAxisLabels(this.xAxisLabel, this.yAxisLabel, this.layout);
-
-    // Draw Female/Male labels at the top of the plot.
-    this.drawCategoryLabels();
-
+    // Set variable for line width based on canvas
     var lineWidth =
       (this.layout.rightMargin - this.layout.leftMargin) /
       this.data.getRowCount();
 
     // Loop over every row in the data.
     for (var i = 0; i < this.data.getRowCount(); i++) {
-      // Calculate the x position for each company.
+      // Calculate the x position for each bar
       var lineX = lineWidth * i + this.layout.leftMargin;
 
       // Create an object that stores data from the current row.
@@ -126,36 +126,21 @@ function ColumnChart() {
         this.layout.bottomMargin + 20
       );
 
-      // Draw female employees rectangle.
+      // Draw bar.
       fill(colorTheme[i % colorTheme.length]);
       rect(
         lineX,
-        (1 - columnValue.value / maxHeight) *
+        (1 - columnValue.value / this.maxHeight) *
           (this.layout.bottomMargin - this.layout.topMargin) +
           this.layout.topMargin,
         lineWidth,
         (this.layout.bottomMargin - this.layout.topMargin) *
-          (columnValue.value / maxHeight)
+          (columnValue.value / this.maxHeight)
       );
     }
   };
 
-  this.drawCategoryLabels = function () {
-    // fill(0);
-    // noStroke();
-    // textAlign("left", "top");
-    // text("Female", this.layout.leftMargin, this.layout.pad);
-    // textAlign("center", "top");
-    // text("50%", this.midX, this.layout.pad);
-    // textAlign("right", "top");
-    // text("Male", this.layout.rightMargin, this.layout.pad);
-  };
-
-  this.mapPercentToHeight = function (percent) {
-    // console.log(percent);
-    return map(percent, 0, 100, 0, this.layout.plotHeight());
-  };
-
+  // Draw title function
   this.drawTitle = function () {
     fill(0);
     noStroke();
@@ -168,19 +153,12 @@ function ColumnChart() {
     );
   };
 
+  // Map values to correct place based on canvas
   this.mapValuesToHeight = function (value) {
-    var maxHeight = 0;
-
-    for (var i = 0; i < this.data.getRowCount(); i++) {
-      if (this.data.getNum(i, 1) > maxHeight) {
-        maxHeight = this.data.getNum(i, 1);
-      }
-    }
-
     return map(
       value,
       0,
-      maxHeight,
+      this.maxHeight,
       this.layout.bottomMargin, // draw bottom to top from margin
       this.layout.topMargin
     );

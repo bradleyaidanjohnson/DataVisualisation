@@ -15,6 +15,9 @@ function ClusterColumnChart() {
 
   var marginSize = 35;
 
+  // Initialize max height variable
+  this.maxHeight = 0;
+
   // Layout object to store all common plot layout parameters and
   // methods.
   this.layout = {
@@ -69,15 +72,13 @@ function ClusterColumnChart() {
       return;
     }
 
-    // this.xAxisLabel = this.data.columns[0];
+    // Store labels
     this.yAxisLabel = this.data.columns[0];
-
-    var maxHeight = 0;
-
+    // Loop over ther columns and rows to find the column with the greatest sum
     for (var i = 1; i < this.data.getColumnCount(); i++) {
       for (var j = 0; j < this.data.getRowCount(); j++) {
-        if (this.data.getNum(j, i) > maxHeight) {
-          maxHeight = this.data.getNum(j, i);
+        if (this.data.getNum(j, i) > this.maxHeight) {
+          this.maxHeight = this.data.getNum(j, i);
         }
       }
     }
@@ -88,7 +89,7 @@ function ClusterColumnChart() {
     // Draw all y-axis labels.
     drawYAxisTickLabels(
       0,
-      maxHeight,
+      this.maxHeight,
       this.layout,
       this.mapValuesToHeight.bind(this),
       0
@@ -100,16 +101,16 @@ function ClusterColumnChart() {
     // Draw x and y axis labels.
     drawAxisLabels(this.xAxisLabel, this.yAxisLabel, this.layout);
 
-    // Draw Female/Male labels at the top of the plot.
-    this.drawCategoryLabels();
-
+    // Set variable for line width based on canvas
     var lineWidth =
       (this.layout.rightMargin - this.layout.leftMargin) /
       this.data.getColumnCount();
 
     // Loop over every row in the data.
     for (var i = 1; i < this.data.getColumnCount(); i++) {
+      // set diff to 0 for each column
       diff = 0;
+      // Loop every row per column
       for (var j = 0; j < this.data.getRowCount(); j++) {
         // Calculate the x position
         var lineX = lineWidth * (i - 1) + this.layout.leftMargin;
@@ -125,13 +126,13 @@ function ClusterColumnChart() {
         fill(colorTheme[j % colorTheme.length]);
         let x = lineX + (lineWidth / this.data.getRowCount()) * j;
         let y =
-          (1 - columnValue.value / maxHeight) *
+          (1 - columnValue.value / this.maxHeight) *
             (this.layout.bottomMargin - this.layout.topMargin) +
           this.layout.topMargin;
         let w = lineWidth / this.data.getRowCount();
         let h =
           (this.layout.bottomMargin - this.layout.topMargin) *
-          (columnValue.value / maxHeight);
+          (columnValue.value / this.maxHeight);
         stroke(0, 0, 0);
         strokeWeight(0.5);
         rect(x, y, w, h);
@@ -140,9 +141,9 @@ function ClusterColumnChart() {
         textSize(8);
         text(columnValue.value, x + w / 2, y + h / 2);
         textSize(14);
-
+        // add h to diff
         diff += h;
-
+        // Draw legend
         if (i < 2) {
           this.makeLegendItem(
             this.data.getString(j, 0),
@@ -163,23 +164,7 @@ function ClusterColumnChart() {
       );
     }
   };
-
-  this.drawCategoryLabels = function () {
-    // fill(0);
-    // noStroke();
-    // textAlign("left", "top");
-    // text("Female", this.layout.leftMargin, this.layout.pad);
-    // textAlign("center", "top");
-    // text("50%", this.midX, this.layout.pad);
-    // textAlign("right", "top");
-    // text("Male", this.layout.rightMargin, this.layout.pad);
-  };
-
-  this.mapPercentToHeight = function (percent) {
-    // console.log(percent);
-    return map(percent, 0, 100, 0, this.layout.plotHeight());
-  };
-
+  // Draw title function
   this.drawTitle = function () {
     fill(0);
     noStroke();
@@ -191,25 +176,17 @@ function ClusterColumnChart() {
       this.layout.topMargin - this.layout.marginSize / 2
     );
   };
-
+  // Map values to correct place based on canvas
   this.mapValuesToHeight = function (value) {
-    var maxHeight = 0;
-
-    for (var i = 0; i < this.data.getRowCount(); i++) {
-      if (this.data.getNum(i, 1) > maxHeight) {
-        maxHeight = this.data.getNum(i, 1);
-      }
-    }
-
     return map(
       value,
       0,
-      maxHeight,
+      this.maxHeight,
       this.layout.bottomMargin, // draw bottom to top from margin
       this.layout.topMargin
     );
   };
-
+  // Draw legend function
   this.makeLegendItem = function (label, i, colour) {
     var x = this.layout.leftMargin + i * 100;
     var y = this.layout.bottomMargin + 30;

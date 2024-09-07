@@ -116,7 +116,7 @@ function StackedBarChart() {
     for (var i = 1; i < this.data.getColumnCount(); i++) {
       // Set diff to 0 for each column
       diff = 0;
-      // Loop again for every row for the cluster
+      // Loop again for every row for the stack
       for (var j = 0; j < this.data.getRowCount(); j++) {
         // Calculate the Y position
         var lineY = lineHeight * (i - 1) + this.layout.topMargin;

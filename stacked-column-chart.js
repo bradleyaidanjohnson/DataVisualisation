@@ -15,6 +15,9 @@ function StackedColumnChart() {
 
   var marginSize = 35;
 
+  // Initialize max height variable
+  this.maxHeight = 0;
+
   // Layout object to store all common plot layout parameters and
   // methods.
   this.layout = {
@@ -68,21 +71,22 @@ function StackedColumnChart() {
       console.log("Data not yet loaded");
       return;
     }
-
-    // this.xAxisLabel = this.data.columns[0];
+    // Store labels
     this.yAxisLabel = this.data.columns[0];
-
-    var maxHeight = 0;
+    // Initialise array to hold heights
     var curHeightArray = [];
 
+    // Loop through finding the height of each column and adding them to array
+    // or setting max height if they are the highest
     for (var i = 1; i < this.data.getColumnCount(); i++) {
       var curHeight = 0;
       for (var j = 0; j < this.data.getRowCount(); j++) {
         curHeight += this.data.getNum(j, i);
-        if (curHeight > maxHeight) {
-          maxHeight = curHeight;
+        if (curHeight > this.maxHeight) {
+          this.maxHeight = curHeight;
         }
       }
+      // Add height to the array
       curHeightArray.push(curHeight);
     }
 
@@ -92,7 +96,7 @@ function StackedColumnChart() {
     // Draw all y-axis labels.
     drawYAxisTickLabels(
       0,
-      maxHeight,
+      this.maxHeight,
       this.layout,
       this.mapValuesToHeight.bind(this),
       0
@@ -107,13 +111,16 @@ function StackedColumnChart() {
     // Draw Female/Male labels at the top of the plot.
     this.drawCategoryLabels();
 
+    // Initiate lineWidth variable to the correct % of canvas height
     var lineWidth =
       (this.layout.rightMargin - this.layout.leftMargin) /
       this.data.getColumnCount();
 
     // Loop over every row in the data.
     for (var i = 1; i < this.data.getColumnCount(); i++) {
+      // Set diff to 0 for each column
       diff = 0;
+      // Loop again for every row for the stack
       for (var j = 0; j < this.data.getRowCount(); j++) {
         // Calculate the x position
         var lineX = lineWidth * (i - 1) + this.layout.leftMargin;
@@ -125,18 +132,19 @@ function StackedColumnChart() {
           value: this.data.getNum(j, i),
         };
 
-        // Draw each rect
+        // Draw bar based on stacking row count number of times per column.
         fill(colorTheme[j % colorTheme.length]);
         let x = lineX;
         let y =
-          (1 - curHeightArray[i - 1] / maxHeight) *
+          (1 - curHeightArray[i - 1] / this.maxHeight) *
             (this.layout.bottomMargin - this.layout.topMargin) +
           this.layout.topMargin +
           diff;
+        // set h based on value
         let w = lineWidth;
         let h =
           (this.layout.bottomMargin - this.layout.topMargin) *
-          (columnValue.value / maxHeight);
+          (columnValue.value / this.maxHeight);
         stroke(0, 0, 0);
         strokeWeight(0.5);
         rect(x, y, w, h);
@@ -144,8 +152,10 @@ function StackedColumnChart() {
         fill("#FFFFFF");
         text(columnValue.value, x + lineWidth / 2, y + h / 2);
 
+        // add the h value to current differnece
         diff += h;
 
+        // Draw a legend
         if (i < 2) {
           this.makeLegendItem(
             this.data.getString(j, 0),
@@ -166,23 +176,7 @@ function StackedColumnChart() {
       );
     }
   };
-
-  this.drawCategoryLabels = function () {
-    // fill(0);
-    // noStroke();
-    // textAlign("left", "top");
-    // text("Female", this.layout.leftMargin, this.layout.pad);
-    // textAlign("center", "top");
-    // text("50%", this.midX, this.layout.pad);
-    // textAlign("right", "top");
-    // text("Male", this.layout.rightMargin, this.layout.pad);
-  };
-
-  this.mapPercentToHeight = function (percent) {
-    // console.log(percent);
-    return map(percent, 0, 100, 0, this.layout.plotHeight());
-  };
-
+  // Draw title function
   this.drawTitle = function () {
     fill(0);
     noStroke();
@@ -195,27 +189,22 @@ function StackedColumnChart() {
     );
   };
 
+  // Map values to correct place based on canvas
   this.mapValuesToHeight = function (value) {
-    var maxHeight = 0;
-
-    for (var i = 0; i < this.data.getRowCount(); i++) {
-      if (this.data.getNum(i, 1) > maxHeight) {
-        maxHeight = this.data.getNum(i, 1);
-      }
-    }
-
     return map(
       value,
       0,
-      maxHeight,
+      this.maxHeight,
       this.layout.bottomMargin, // draw bottom to top from margin
       this.layout.topMargin
     );
   };
 
+  // Draw legend
   this.makeLegendItem = function (label, i, colour) {
     var x = this.layout.leftMargin + i * 100;
     var y = this.layout.bottomMargin + 30;
+    // Legend box dimensions
     var boxWidth = 20;
     var boxHeight = 20;
 
