@@ -223,7 +223,8 @@ function StackedBarChart() {
     fill("black");
     noStroke();
     textAlign("left", "center");
-    textSize(12);
+    textSize(8);
     text(label, x + boxWidth + 10, y + boxWidth / 2);
+    textSize(14);
   };
 }

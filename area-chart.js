@@ -176,6 +176,12 @@ function AreaChart() {
               this.layout,
               this.mapXToWidth.bind(this)
             );
+
+            this.makeLegendItem(
+              this.data.columns[j],
+              j - 1,
+              colorTheme[(j - 1) % colorTheme.length]
+            );
           }
         }
         // console.log(this.areaLines);
@@ -222,5 +228,22 @@ function AreaChart() {
       this.layout.bottomMargin, // draw bottom to top from margin
       this.layout.topMargin
     );
+  };
+
+  this.makeLegendItem = function (label, i, colour) {
+    var x = this.layout.leftMargin + i * 100;
+    var y = this.layout.bottomMargin + 30;
+    var boxWidth = 20;
+    var boxHeight = 20;
+
+    fill(colour);
+    rect(x, y, boxWidth, boxHeight);
+
+    fill("black");
+    noStroke();
+    textAlign("left", "center");
+    textSize(10);
+    text(label, x + boxWidth + 10, y + boxWidth / 2);
+    textSize(14);
   };
 }
