@@ -1,13 +1,13 @@
-function AreaChart() {
+function StackedAreaChart() {
   // Name for the visualisation to appear in the menu bar.
-  this.name = "Area Chart";
+  this.name = "Stacked Area Chart";
 
   // Each visualisation must have a unique ID with no special
   // characters.
-  this.id = "area-chart";
+  this.id = "stacked-area-chart";
 
   // Title to display above the plot.
-  this.title = "Area Chart Demo";
+  this.title = "Stacked Area Chart Demo";
 
   // Names for each axis.
   this.xAxisLabel = "";
@@ -58,7 +58,7 @@ function AreaChart() {
   this.preload = function () {
     var self = this;
     this.data = loadTable(
-      "./data/new-data/area_chart_data.csv",
+      "./data/new-data/stacked_area_chart_data.csv",
       "csv",
       "header",
       // Callback function to set the value
@@ -81,11 +81,12 @@ function AreaChart() {
     this.minVal = 0; //
     this.maxVal = 0;
     for (var i = 0; i < this.data.getRowCount(); i++) {
+      var currVal = 0;
       for (var j = 1; j < this.data.getColumnCount(); j++) {
-        var currVal = this.data.getNum(i, j);
-        if (currVal > this.maxVal) {
-          this.maxVal = currVal;
-        }
+        currVal = currVal + this.data.getNum(i, j);
+      }
+      if (currVal > this.maxVal) {
+        this.maxVal = currVal;
       }
     }
 
@@ -126,6 +127,11 @@ function AreaChart() {
     this.areaLines = [];
     // Loop over all rows and draw a line from the previous value to
     // the current.
+    var yHeights = [];
+    for (var j = 0; j < this.data.getRowCount(); j++) {
+      yHeights.push(this.layout.bottomMargin);
+    }
+
     for (var j = 1; j < this.data.getColumnCount(); j++) {
       var previous = {
         x: 0,
@@ -138,32 +144,33 @@ function AreaChart() {
         var current = {
           // Convert strings to numbers.
           x: i,
+          // y: this.mapYToHeight(this.data.getNum(i, j)),
           val: this.data.getNum(i, j),
           label: this.data.getColumn(j),
           xlabel: this.data.getString(i, 0),
         };
-
         if (previous != null) {
-          // Draw line segment connecting previous year to current
-          // year pay gap.
-          // stroke(0);
-          // line(
-          //   this.mapXToWidth(previous.x),
-          //   this.mapYToHeight(previous.val),
-          //   this.mapXToWidth(current.x),
-          //   this.mapYToHeight(current.val)
+          // console.log(
+          //   this.mapYToHeight(current.val) -
+          //     (this.layout.bottomMargin - yHeights[i])
           // );
-
+          // console.log(this.mapYToHeight(current.val));
           var tempAreaLine = new AreaLine(
             this.mapXToWidth(previous.x),
-            this.mapYToHeight(previous.val),
+            this.mapYToHeight(previous.val) -
+              (this.layout.bottomMargin - yHeights[i - 1]),
             this.mapXToWidth(current.x),
-            this.mapYToHeight(current.val),
-            this.layout.bottomMargin,
-            this.layout.bottomMargin,
+            this.mapYToHeight(current.val) -
+              (this.layout.bottomMargin - yHeights[i]),
+            yHeights[i - 1],
+            yHeights[i],
             j
           );
           this.areaLines.push(tempAreaLine);
+
+          yHeights[i - 1] =
+            this.mapYToHeight(previous.val) -
+            (this.layout.bottomMargin - yHeights[i - 1]);
           // The number of x-axis labels to skip so that only
           // numXTickLabels are drawn.
           var xLabelSkip = ceil(this.numXLabels / this.layout.numXTickLabels);
@@ -184,8 +191,12 @@ function AreaChart() {
         // position of the next line segment.
         previous = current;
       }
+      yHeights[this.data.getRowCount() - 1] =
+        this.mapYToHeight(current.val) -
+        (this.layout.bottomMargin - yHeights[this.data.getRowCount() - 1]);
+      // console.log(yHeights);
     }
-    console.log(this.areaLines);
+    // console.log(this.areaLines);
     for (let tempo of this.areaLines) {
       tempo.fillLine();
     }

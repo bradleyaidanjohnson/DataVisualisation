@@ -320,7 +320,6 @@ function drawAreaXAxisTickLabel(values, layout) {
   fill(0);
   noStroke();
   textAlign("center", "center");
-  console.log(values.length);
 
   textSize(10);
 
