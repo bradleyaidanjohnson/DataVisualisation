@@ -11,7 +11,7 @@ function HundredStackedAreaChart() {
 
   // Names for each axis.
   this.xAxisLabel = "";
-  this.yAxisLabel = "Value";
+  this.yAxisLabel = "%";
 
   // Array of areaLines to hold lines drawn before filling
   this.areaLines = [];
@@ -47,7 +47,7 @@ function HundredStackedAreaChart() {
     // Number of axis tick labels to draw so that they are not drawn on
     // top of one another.
     numXTickLabels: 10,
-    numYTickLabels: 8,
+    numYTickLabels: 10,
   };
 
   // Property to represent whether data has been loaded.
@@ -79,7 +79,7 @@ function HundredStackedAreaChart() {
 
     // Find min and max pay values for mapping to canvas height.
     this.minVal = 0; //
-    this.maxVal = 1;
+    this.maxVal = 100;
     this.maxActualValues = [];
     for (var i = 0; i < this.data.getRowCount(); i++) {
       var currVal = 0;
@@ -157,10 +157,12 @@ function HundredStackedAreaChart() {
           // console.log(this.mapYToHeight(current.val / this.maxActualValue));
           var tempAreaLine = new AreaLine(
             this.mapXToWidth(previous.x),
-            this.mapYToHeight(previous.val / this.maxActualValues[i - 1]) -
+            this.mapYToHeight(
+              (previous.val / this.maxActualValues[i - 1]) * 100
+            ) -
               (this.layout.bottomMargin - yHeights[i - 1]),
             this.mapXToWidth(current.x),
-            this.mapYToHeight(current.val / this.maxActualValues[i]) -
+            this.mapYToHeight((current.val / this.maxActualValues[i]) * 100) -
               (this.layout.bottomMargin - yHeights[i]),
             yHeights[i - 1],
             yHeights[i],
@@ -169,7 +171,9 @@ function HundredStackedAreaChart() {
           this.areaLines.push(tempAreaLine);
 
           yHeights[i - 1] =
-            this.mapYToHeight(previous.val / this.maxActualValues[i - 1]) -
+            this.mapYToHeight(
+              (previous.val / this.maxActualValues[i - 1]) * 100
+            ) -
             (this.layout.bottomMargin - yHeights[i - 1]);
           // The number of x-axis labels to skip so that only
           // numXTickLabels are drawn.
@@ -193,7 +197,8 @@ function HundredStackedAreaChart() {
       }
       yHeights[this.data.getRowCount() - 1] =
         this.mapYToHeight(
-          current.val / this.maxActualValues[this.data.getRowCount() - 1]
+          (current.val / this.maxActualValues[this.data.getRowCount() - 1]) *
+            100
         ) -
         (this.layout.bottomMargin - yHeights[this.data.getRowCount() - 1]);
       // console.log(yHeights);
