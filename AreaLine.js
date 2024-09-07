@@ -7,7 +7,9 @@ function AreaLine(x0, y0, x1, y1, base, col) {
   this.col = col;
 
   this.fillLine = function () {
-    fill(colorTheme[this.col]);
+    let c = color(colorTheme[this.col]);
+    c.setAlpha(100);
+    fill(c);
     noStroke();
 
     beginShape();

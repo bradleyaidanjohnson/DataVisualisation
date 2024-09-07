@@ -315,3 +315,35 @@ function drawXAxisTickLabel(value, layout, mapFunction) {
     line(x, layout.topMargin, x, layout.bottomMargin);
   }
 }
+
+function drawAreaXAxisTickLabel(values, layout) {
+  fill(0);
+  noStroke();
+  textAlign("center", "center");
+  console.log(values.length);
+
+  textSize(10);
+
+  for (var i = 0; i < values.length; i++) {
+    var x =
+      layout.leftMargin +
+      ((layout.rightMargin - layout.leftMargin) / (values.length - 1)) * i;
+    // text(
+    //   values[i],
+    //   layout.leftMargin +
+    //     ((layout.rightMargin - layout.leftMargin) / (values.length - 1)) * i,
+    //   layout.bottomMargin + layout.marginSize / 2
+    // );
+    push();
+    translate(x, layout.bottomMargin + layout.marginSize / 2);
+    rotate(-PI / 3 / 2);
+    textAlign("center", "center");
+    text(values[i], 0, 0);
+    pop();
+    if (layout.grid) {
+      stroke(220);
+      line(x, layout.topMargin, x, layout.bottomMargin);
+    }
+  }
+  textSize(14);
+}

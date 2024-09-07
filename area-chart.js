@@ -10,8 +10,8 @@ function AreaChart() {
   this.title = "Area Chart Demo";
 
   // Names for each axis.
-  this.xAxisLabel = "year";
-  this.yAxisLabel = "%";
+  this.xAxisLabel = "";
+  this.yAxisLabel = "Value";
 
   // Array of areaLines to hold lines drawn before filling
   this.areaLines = [];
@@ -90,7 +90,7 @@ function AreaChart() {
     }
 
     this.numXLabels = max(0, this.xLabels.length - 1);
-    // console.log(this.minVal, this.maxVal);
+    this.xAxisLabel = this.data.columns[0];
   };
 
   this.destroy = function () {};
@@ -106,12 +106,14 @@ function AreaChart() {
 
     // Draw all y-axis labels.
     drawYAxisTickLabels(
-      this.minPayGap,
-      this.maxPayGap,
+      this.minVal,
+      this.maxVal,
       this.layout,
       this.mapYToHeight.bind(this),
       0
     );
+
+    drawAreaXAxisTickLabel(this.data.getColumn(0), this.layout);
 
     // Draw x and y axis.
     drawAxis(this.layout);
@@ -165,7 +167,8 @@ function AreaChart() {
           // numXTickLabels are drawn.
           var xLabelSkip = ceil(this.numXLabels / this.layout.numXTickLabels);
 
-          // Draw the tick label marking the start of the previous year.
+          //
+
           if (i % xLabelSkip == 0) {
             drawXAxisTickLabel(
               previous.year,
