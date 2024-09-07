@@ -70,7 +70,7 @@ Arrays must be the same length!`);
       textSize(24);
       text(title, this.x, this.y - this.diameter * 0.6);
     }
-
+    // Draw white circle to represent the doughnut
     fill("#FFFFFF");
     stroke(0);
     circle(this.x, this.y, this.diameter / 2);

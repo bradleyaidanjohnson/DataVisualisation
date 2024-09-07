@@ -11,6 +11,9 @@ function FunnelChart() {
 
   var marginSize = 85;
 
+  // Initialize max width variable
+  this.maxWidth = 0;
+
   // Layout object to store all common plot layout parameters and
   // methods.
   this.layout = {
@@ -56,30 +59,19 @@ function FunnelChart() {
       console.log("Data not yet loaded");
       return;
     }
-
+    // Set axis labels
     this.xAxisLabel = this.data.columns[1];
     this.yAxisLabel = this.data.columns[0];
-
-    var maxWidth = 0;
-
+    // Loop values to set maxwidth
     for (var i = 0; i < this.data.getRowCount(); i++) {
-      if (this.data.getNum(i, 1) > maxWidth) {
-        maxWidth = this.data.getNum(i, 1);
+      if (this.data.getNum(i, 1) > this.maxWidth) {
+        this.maxWidth = this.data.getNum(i, 1);
       }
     }
 
     // Draw the title above the plot.
     this.drawTitle();
-
-    // Draw x and y axis.
-    // drawAxis(this.layout);
-
-    // Draw x and y axis labels.
-    // drawAxisLabels(this.xAxisLabel, this.yAxisLabel, this.layout);
-
-    // Draw labels at the top of the plot.
-    this.drawCategoryLabels();
-
+    // Initialise a lineheigh variable
     var lineHeight =
       (this.layout.bottomMargin - this.layout.topMargin) /
       this.data.getRowCount();
@@ -87,7 +79,7 @@ function FunnelChart() {
     // Draw all y-axis labels.
     drawXAxisTickLabelsFlip(
       0,
-      maxWidth,
+      this.maxWidth,
       this.layout,
       this.mapValuesToWidth.bind(this),
       0
@@ -95,7 +87,7 @@ function FunnelChart() {
 
     // Loop over every row in the data.
     for (var i = 0; i < this.data.getRowCount(); i++) {
-      // Calculate the x position for each company.
+      // Set the line heigh per bar
       var lineX = lineHeight * i + this.layout.topMargin;
 
       // Create an object that stores data from the current row.
@@ -123,7 +115,7 @@ function FunnelChart() {
       textAlign("center", "center");
       textSize(14);
       text(
-        ((columnValue.value / maxWidth) * 100).toFixed(2).toString() + "%",
+        ((columnValue.value / this.maxWidth) * 100).toFixed(2).toString() + "%",
         this.layout.rightMargin + 30,
         lineX + lineHeight / 2
       );
@@ -132,13 +124,13 @@ function FunnelChart() {
       // Draw bar.
       fill(colorTheme[i % colorTheme.length]);
       rect(
-        ((1 - columnValue.value / maxWidth) *
+        ((1 - columnValue.value / this.maxWidth) *
           (this.layout.rightMargin - this.layout.leftMargin)) /
           2 +
           this.layout.leftMargin,
         lineX,
         (this.layout.rightMargin - this.layout.leftMargin) *
-          (columnValue.value / maxWidth),
+          (columnValue.value / this.maxWidth),
         lineHeight
       );
       // Draw value inside rectangle
@@ -157,23 +149,7 @@ function FunnelChart() {
       textSize(14);
     }
   };
-
-  this.drawCategoryLabels = function () {
-    // fill(0);
-    // noStroke();
-    // textAlign("left", "top");
-    // text("Female", this.layout.leftMargin, this.layout.pad);
-    // textAlign("center", "top");
-    // text("50%", this.midX, this.layout.pad);
-    // textAlign("right", "top");
-    // text("Male", this.layout.rightMargin, this.layout.pad);
-  };
-
-  this.mapPercentToHeight = function (percent) {
-    // console.log(percent);
-    return map(percent, 0, 100, 0, this.layout.plotHeight());
-  };
-
+  // Draw title function
   this.drawTitle = function () {
     fill(0);
     noStroke();
@@ -185,20 +161,12 @@ function FunnelChart() {
       this.layout.topMargin - this.layout.marginSize / 2
     );
   };
-
+  // Map values to correct place based on canvas
   this.mapValuesToWidth = function (value) {
-    var maxWidth = 0;
-
-    for (var i = 0; i < this.data.getRowCount(); i++) {
-      if (this.data.getNum(i, 1) > maxWidth) {
-        maxWidth = this.data.getNum(i, 1);
-      }
-    }
-
     return map(
       value,
       0,
-      maxWidth,
+      this.maxWidth,
       this.layout.leftMargin, // draw bottom to top from margin
       this.layout.rightMargin
     );
