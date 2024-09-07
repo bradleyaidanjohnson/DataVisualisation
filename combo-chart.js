@@ -14,6 +14,9 @@ function ComboChart() {
   this.yAxisLabel = "";
 
   var marginSize = 35;
+  // Initialize max height variables for both axes
+  this.maxHeight = 0;
+  this.maxHeight2 = 0;
 
   // Layout object to store all common plot layout parameters and
   // methods.
@@ -66,13 +69,9 @@ function ComboChart() {
     // Font defaults.
     textSize(16);
 
-    // Set min and max years: assumes data is sorted by date.
-    this.startYear = this.data.getNum(0, "Year");
-    this.endYear = this.data.getNum(this.data.getRowCount() - 1, "Year");
-
-    // Find min and max pay gap for mapping to canvas height.
-    this.minPayGap = 0; // Pay equality (zero pay gap).
-    this.maxPayGap = max(this.data.getColumn("Returns %"));
+    // Set min and max x values
+    this.startXVal = this.data.getNum(0, 0);
+    this.endXVal = this.data.getNum(this.data.getRowCount() - 1, 0);
 
     // Dynamically set x tick labels
     numXTickLabels = this.data.getRowCount() + 1;
@@ -84,20 +83,17 @@ function ComboChart() {
       console.log("Data not yet loaded");
       return;
     }
-
+    // Set labels
     this.xAxisLabel = this.data.columns[0];
     this.yAxisLabel1 = this.data.columns[1];
     this.yAxisLabel2 = this.data.columns[2];
-
-    var maxHeight = 0;
-    var maxHeight2 = 0;
-
+    // Loop rows for both max values
     for (var i = 0; i < this.data.getRowCount(); i++) {
-      if (this.data.getNum(i, 1) > maxHeight) {
-        maxHeight = this.data.getNum(i, 1);
+      if (this.data.getNum(i, 1) > this.maxHeight) {
+        this.maxHeight = this.data.getNum(i, 1);
       }
-      if (this.data.getNum(i, 2) > maxHeight2) {
-        maxHeight2 = this.data.getNum(i, 2);
+      if (this.data.getNum(i, 2) > this.maxHeight2) {
+        this.maxHeight2 = this.data.getNum(i, 2);
       }
     }
 
@@ -107,8 +103,8 @@ function ComboChart() {
     // Draw all y-axis labels.
     drawComboYAxisTickLabels(
       0,
-      maxHeight,
-      maxHeight2,
+      this.maxHeight,
+      this.maxHeight2,
       this.layout,
       this.mapValuesToHeight.bind(this),
       this.mapValuesToLineHeight.bind(this),
@@ -126,17 +122,14 @@ function ComboChart() {
       this.yAxisLabel2,
       this.layout
     );
-
-    // Draw Female/Male labels at the top of the plot.
-    this.drawCategoryLabels();
-
+    // Initiate variable to hold width of line
     var lineWidth =
       (this.layout.rightMargin - this.layout.leftMargin) /
       this.data.getRowCount();
 
     // Loop over every row in the data.
     for (var i = 0; i < this.data.getRowCount(); i++) {
-      // Calculate the x position for each company.
+      // Calculate the x line for the row
       var lineX = lineWidth * i + this.layout.leftMargin;
 
       // Create an object that stores data from the current row.
@@ -155,21 +148,20 @@ function ComboChart() {
         this.layout.bottomMargin + 20
       );
 
-      // Draw female employees rectangle.
+      // Draw bar
       fill(colorTheme[i % colorTheme.length]);
       rect(
         lineX,
-        (1 - columnValue.value / maxHeight) *
+        (1 - columnValue.value / this.maxHeight) *
           (this.layout.bottomMargin - this.layout.topMargin) +
           this.layout.topMargin,
         lineWidth,
         (this.layout.bottomMargin - this.layout.topMargin) *
-          (columnValue.value / maxHeight)
+          (columnValue.value / this.maxHeight)
       );
     }
 
-    // Plot all pay gaps between startYear and endYear using the width
-    // of the canvas minus margins.
+    // Initiate previous vairble and get the number of points from the rowcount
     var previous;
     var numPoints = this.data.getRowCount();
 
@@ -178,60 +170,26 @@ function ComboChart() {
     for (var i = 0; i < numPoints; i++) {
       // Create an object to store data for the current year.
       var current = {
-        // Convert strings to numbers.
         year: this.data.getNum(i, 0),
         returnsPerc: this.data.getNum(i, 2),
       };
-
+      // If this is the first loop, skip drawing the line as there is no origin
       if (previous != null) {
-        // Draw line segment connecting previous year to current
-        // year pay gap.
+        // Draw line segment connecting previous to current
         stroke(0);
         line(
-          this.mapYearToWidth(previous.year),
+          this.mapXValToWidth(previous.year),
           this.mapValuesToLineHeight(previous.returnsPerc),
-          this.mapYearToWidth(current.year),
+          this.mapXValToWidth(current.year),
           this.mapValuesToLineHeight(current.returnsPerc)
         );
-        // The number of x-axis labels to skip so that only
-        // numXTickLabels are drawn.
-        var xLabelSkip = ceil(numPoints / this.layout.numXTickLabels);
-
-        // Draw the tick label marking the start of the previous year.
-        // if (i % xLabelSkip == 0) {
-        //   drawXAxisTickLabelsFlip(
-        //     0,
-        //     1,
-        //     this.layout,
-        //     this.mapYearToWidth.bind(this),
-        //     2
-        //   );
-        // }
       }
 
-      // Assign current year to previous year so that it is available
-      // during the next iteration of this loop to give us the start
-      // position of the next line segment.
+      // Assign previous to current
       previous = current;
     }
   };
-
-  this.drawCategoryLabels = function () {
-    // fill(0);
-    // noStroke();
-    // textAlign("left", "top");
-    // text("Female", this.layout.leftMargin, this.layout.pad);
-    // textAlign("center", "top");
-    // text("50%", this.midX, this.layout.pad);
-    // textAlign("right", "top");
-    // text("Male", this.layout.rightMargin, this.layout.pad);
-  };
-
-  this.mapPercentToHeight = function (percent) {
-    // console.log(percent);
-    return map(percent, 0, 100, 0, this.layout.plotHeight());
-  };
-
+  // Draw title function
   this.drawTitle = function () {
     fill(0);
     noStroke();
@@ -243,56 +201,32 @@ function ComboChart() {
       this.layout.topMargin - this.layout.marginSize / 2
     );
   };
-
+  // Map values to height for bars
   this.mapValuesToHeight = function (value) {
-    var maxHeight = this.data.getNum(0, 1);
-    var minHeight = this.data.getNum(0, 1);
-
-    for (var i = 0; i < this.data.getRowCount(); i++) {
-      if (this.data.getNum(i, 1) > maxHeight) {
-        maxHeight = this.data.getNum(i, 1);
-      }
-      if (this.data.getNum(i, 1) < minHeight) {
-        minHeight = this.data.getNum(i, 1);
-      }
-    }
-
     return map(
       value,
       0,
-      maxHeight,
+      this.maxHeight,
       this.layout.bottomMargin, // draw bottom to top from margin
       this.layout.topMargin
     );
   };
-
+  // Map values to heights for lines
   this.mapValuesToLineHeight = function (value) {
-    var maxHeight = this.data.getNum(0, 2);
-    var minHeight = this.data.getNum(0, 2);
-
-    for (var i = 0; i < this.data.getRowCount(); i++) {
-      if (this.data.getNum(i, 2) > maxHeight) {
-        maxHeight = this.data.getNum(i, 2);
-      }
-      if (this.data.getNum(i, 1) < minHeight) {
-        minHeight = this.data.getNum(i, 1);
-      }
-    }
-
     return map(
       value,
       0,
-      maxHeight,
+      this.maxHeight2,
       this.layout.bottomMargin, // draw bottom to top from margin
       this.layout.topMargin
     );
   };
-
-  this.mapYearToWidth = function (value) {
+  // Map x values to width function
+  this.mapXValToWidth = function (value) {
     return map(
       value,
-      this.startYear,
-      this.endYear,
+      this.startXVal,
+      this.endXVal,
       this.layout.leftMargin, // Draw left-to-right from margin.
       this.layout.rightMargin
     );

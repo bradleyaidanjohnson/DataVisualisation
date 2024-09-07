@@ -108,9 +108,6 @@ function StackedColumnChart() {
     // Draw x and y axis labels.
     drawAxisLabels(this.xAxisLabel, this.yAxisLabel, this.layout);
 
-    // Draw Female/Male labels at the top of the plot.
-    this.drawCategoryLabels();
-
     // Initiate lineWidth variable to the correct % of canvas height
     var lineWidth =
       (this.layout.rightMargin - this.layout.leftMargin) /
