@@ -146,13 +146,13 @@ function AreaChart() {
         if (previous != null) {
           // Draw line segment connecting previous year to current
           // year pay gap.
-          stroke(0);
-          line(
-            this.mapXToWidth(previous.x),
-            this.mapYToHeight(previous.val),
-            this.mapXToWidth(current.x),
-            this.mapYToHeight(current.val)
-          );
+          // stroke(0);
+          // line(
+          //   this.mapXToWidth(previous.x),
+          //   this.mapYToHeight(previous.val),
+          //   this.mapXToWidth(current.x),
+          //   this.mapYToHeight(current.val)
+          // );
 
           var tempAreaLine = new AreaLine(
             this.mapXToWidth(previous.x),
