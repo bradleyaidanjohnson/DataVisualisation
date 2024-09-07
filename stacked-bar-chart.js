@@ -15,6 +15,9 @@ function StackedBarChart() {
 
   var marginSize = 35;
 
+  // Initialize max width variable
+  this.maxWidth = 0;
+
   // Layout object to store all common plot layout parameters and
   // methods.
   this.layout = {
@@ -68,21 +71,22 @@ function StackedBarChart() {
       console.log("Data not yet loaded");
       return;
     }
-
+    // Set axis labels
     this.xAxisLabel = this.data.columns[1];
     this.yAxisLabel = this.data.columns[0];
-
-    var maxWidth = 0;
+    // Initialise array to hold widths
     var curWidthArray = [];
-
+    // Loop through finding the width of each column and adding them to array
+    // or setting max width if they are the highest
     for (var i = 1; i < this.data.getColumnCount(); i++) {
       var curWidth = 0;
       for (var j = 0; j < this.data.getRowCount(); j++) {
         curWidth += this.data.getNum(j, i);
-        if (curWidth > maxWidth) {
-          maxWidth = curWidth;
+        if (curWidth > this.maxWidth) {
+          this.maxWidth = curWidth;
         }
       }
+      // Add width to array
       curWidthArray.push(curWidth);
     }
 
@@ -94,10 +98,7 @@ function StackedBarChart() {
 
     // Draw x and y axis labels.
     drawAxisLabels(this.xAxisLabel, this.yAxisLabel, this.layout);
-
-    // Draw labels at the top of the plot.
-    this.drawCategoryLabels();
-
+    // Initiate lineheight variable to the correct % of canvas height
     var lineHeight =
       (this.layout.bottomMargin - this.layout.topMargin) /
       (this.data.getColumnCount() - 1);
@@ -105,7 +106,7 @@ function StackedBarChart() {
     // Draw all y-axis labels.
     drawXAxisTickLabelsFlip(
       0,
-      maxWidth,
+      this.maxWidth,
       this.layout,
       this.mapValuesToWidth.bind(this),
       0
@@ -113,9 +114,11 @@ function StackedBarChart() {
 
     // Loop over every row in the data.
     for (var i = 1; i < this.data.getColumnCount(); i++) {
+      // Set diff to 0 for each column
       diff = 0;
+      // Loop again for every row for the cluster
       for (var j = 0; j < this.data.getRowCount(); j++) {
-        // Calculate the x position
+        // Calculate the Y position
         var lineY = lineHeight * (i - 1) + this.layout.topMargin;
 
         // Create an object that stores data from the current row.
@@ -124,14 +127,14 @@ function StackedBarChart() {
           name: this.data.columns[i],
           value: this.data.getNum(j, i),
         };
-
-        // Draw bar.
+        // Draw bar based on stacking row count number of times per column.
         fill(colorTheme[j % colorTheme.length]);
         let x = this.layout.leftMargin + diff;
         let y = lineY;
+        // set w based on value
         let w =
           (this.layout.rightMargin - this.layout.leftMargin) *
-          (columnValue.value / maxWidth);
+          (columnValue.value / this.maxWidth);
         let h = lineHeight;
         stroke(0, 0, 0);
         strokeWeight(0.5);
@@ -139,9 +142,9 @@ function StackedBarChart() {
         strokeWeight(0);
         fill("#FFFFFF");
         text(columnValue.value, x + w / 2, y + lineHeight / 2);
-
+        // add the w value to current differnece
         diff += w;
-
+        // Draw a legend
         if (i < 2) {
           this.makeLegendItem(
             this.data.getString(j, 0),
@@ -164,23 +167,7 @@ function StackedBarChart() {
       textSize(14);
     }
   };
-
-  this.drawCategoryLabels = function () {
-    // fill(0);
-    // noStroke();
-    // textAlign("left", "top");
-    // text("Female", this.layout.leftMargin, this.layout.pad);
-    // textAlign("center", "top");
-    // text("50%", this.midX, this.layout.pad);
-    // textAlign("right", "top");
-    // text("Male", this.layout.rightMargin, this.layout.pad);
-  };
-
-  this.mapPercentToHeight = function (percent) {
-    // console.log(percent);
-    return map(percent, 0, 100, 0, this.layout.plotHeight());
-  };
-
+  // Draw title function
   this.drawTitle = function () {
     fill(0);
     noStroke();
@@ -193,27 +180,22 @@ function StackedBarChart() {
     );
   };
 
+  // Map values to correct place based on canvas
   this.mapValuesToWidth = function (value) {
-    var maxWidth = 0;
-
-    for (var i = 0; i < this.data.getRowCount(); i++) {
-      if (this.data.getNum(i, 1) > maxWidth) {
-        maxWidth = this.data.getNum(i, 1);
-      }
-    }
-
     return map(
       value,
       0,
-      maxWidth,
+      this.maxWidth,
       this.layout.leftMargin, // draw bottom to top from margin
       this.layout.rightMargin
     );
   };
 
+  // Draw legend
   this.makeLegendItem = function (label, i, colour) {
     var x = this.layout.leftMargin + i * 100;
     var y = this.layout.bottomMargin + 30;
+    // Legend box dimensions
     var boxWidth = 20;
     var boxHeight = 20;
 

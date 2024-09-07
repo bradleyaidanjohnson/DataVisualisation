@@ -73,9 +73,8 @@ function StackedAreaChart() {
     // Font defaults.
     textSize(16);
 
-    // Set min and max years: assumes data is sorted by date.
+    // Set labels for the x axis
     this.xLabels = this.data.getColumn(0);
-    // this.endX = this.data.getString(this.data.getRowCount() - 1, 0);
 
     // Find min and max pay values for mapping to canvas height.
     this.minVal = 0; //
@@ -113,7 +112,7 @@ function StackedAreaChart() {
       this.mapYToHeight.bind(this),
       0
     );
-
+    // Draw tick labels
     drawAreaXAxisTickLabel(this.data.getColumn(0), this.layout);
 
     // Draw x and y axis.
@@ -125,14 +124,14 @@ function StackedAreaChart() {
     // Plot all values
     // Empty the list of lines
     this.areaLines = [];
-    // Loop over all rows and draw a line from the previous value to
-    // the current.
+    // Initiate yHeights to set the base of each vector's heights, (starts at bottom margin).
     var yHeights = [];
     for (var j = 0; j < this.data.getRowCount(); j++) {
       yHeights.push(this.layout.bottomMargin);
     }
-
+    // Loop over all rows and draw a vector for each value
     for (var j = 1; j < this.data.getColumnCount(); j++) {
+      // Initialize a previous to the left margin to begin drawing vectors
       var previous = {
         x: 0,
         val: this.data.getNum(0, j),
@@ -142,19 +141,15 @@ function StackedAreaChart() {
       for (var i = 1; i < this.data.getRowCount(); i++) {
         // Create an object to store data for the current year.
         var current = {
-          // Convert strings to numbers.
+          // Create an object to store data for the current value.
           x: i,
-          // y: this.mapYToHeight(this.data.getNum(i, j)),
           val: this.data.getNum(i, j),
           label: this.data.getColumn(j),
           xlabel: this.data.getString(i, 0),
         };
         if (previous != null) {
-          // console.log(
-          //   this.mapYToHeight(current.val) -
-          //     (this.layout.bottomMargin - yHeights[i])
-          // );
-          // console.log(this.mapYToHeight(current.val));
+          // Create a new AreaLine variable for the next vector
+          // each vector is built on the previous shape
           var tempAreaLine = new AreaLine(
             this.mapXToWidth(previous.x),
             this.mapYToHeight(previous.val) -
@@ -166,6 +161,7 @@ function StackedAreaChart() {
             yHeights[i],
             j
           );
+          // Push the vector to the list of vectors
           this.areaLines.push(tempAreaLine);
 
           yHeights[i - 1] =
@@ -183,7 +179,7 @@ function StackedAreaChart() {
               this.layout,
               this.mapXToWidth.bind(this)
             );
-
+            // Draw legend
             this.makeLegendItem(
               this.data.columns[j],
               j - 1,
@@ -191,18 +187,15 @@ function StackedAreaChart() {
             );
           }
         }
-        // console.log(this.areaLines);
-        // Assign current year to previous year so that it is available
-        // during the next iteration of this loop to give us the start
-        // position of the next line segment.
+        // Set previous to the current value ready for the next iteration
         previous = current;
       }
+      // Update the final yHeight in the column (has to be done outside the loop)
       yHeights[this.data.getRowCount() - 1] =
         this.mapYToHeight(current.val) -
         (this.layout.bottomMargin - yHeights[this.data.getRowCount() - 1]);
-      // console.log(yHeights);
     }
-    // console.log(this.areaLines);
+    // Draw all vectors
     for (let tempo of this.areaLines) {
       tempo.fillLine();
     }

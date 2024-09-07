@@ -73,12 +73,11 @@ function AreaChart() {
     // Font defaults.
     textSize(16);
 
-    // Set min and max years: assumes data is sorted by date.
+    // Set labels for the x axis
     this.xLabels = this.data.getColumn(0);
-    // this.endX = this.data.getString(this.data.getRowCount() - 1, 0);
 
     // Find min and max pay values for mapping to canvas height.
-    this.minVal = 0; //
+    this.minVal = 0;
     this.maxVal = 0;
     for (var i = 0; i < this.data.getRowCount(); i++) {
       for (var j = 1; j < this.data.getColumnCount(); j++) {
@@ -124,8 +123,7 @@ function AreaChart() {
     // Plot all values
     // Empty the list of lines
     this.areaLines = [];
-    // Loop over all rows and draw a line from the previous value to
-    // the current.
+    // Loop over all rows and draw a vector for each value
     for (var j = 1; j < this.data.getColumnCount(); j++) {
       var previous = {
         x: 0,
@@ -134,7 +132,7 @@ function AreaChart() {
         xlabel: this.data.getString(0, 0),
       };
       for (var i = 1; i < this.data.getRowCount(); i++) {
-        // Create an object to store data for the current year.
+        // Create an object to store data for the current value.
         var current = {
           // Convert strings to numbers.
           x: i,
@@ -144,16 +142,8 @@ function AreaChart() {
         };
 
         if (previous != null) {
-          // Draw line segment connecting previous year to current
-          // year pay gap.
-          // stroke(0);
-          // line(
-          //   this.mapXToWidth(previous.x),
-          //   this.mapYToHeight(previous.val),
-          //   this.mapXToWidth(current.x),
-          //   this.mapYToHeight(current.val)
-          // );
-
+          // Create a new AreaLine variable for the next vector
+          // each vector is built on the previous shape
           var tempAreaLine = new AreaLine(
             this.mapXToWidth(previous.x),
             this.mapYToHeight(previous.val),
@@ -167,9 +157,6 @@ function AreaChart() {
           // The number of x-axis labels to skip so that only
           // numXTickLabels are drawn.
           var xLabelSkip = ceil(this.numXLabels / this.layout.numXTickLabels);
-
-          //
-
           if (i % xLabelSkip == 0) {
             drawXAxisTickLabel(
               previous.year,
@@ -184,14 +171,11 @@ function AreaChart() {
             );
           }
         }
-        // console.log(this.areaLines);
-        // Assign current year to previous year so that it is available
-        // during the next iteration of this loop to give us the start
-        // position of the next line segment.
+        // Set previous to the current value ready for the next iteration
         previous = current;
       }
     }
-    console.log(this.areaLines);
+    // Draw all vectors
     for (let tempo of this.areaLines) {
       tempo.fillLine();
     }
@@ -210,7 +194,6 @@ function AreaChart() {
   };
 
   this.mapXToWidth = function (value) {
-    // console.log(this.numXLabels);
     return map(
       value,
       0,
