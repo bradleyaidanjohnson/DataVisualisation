@@ -144,6 +144,7 @@ function ColumnChart() {
     this.drawTitle();
 
     // Draw all y-axis labels.
+    textSize(12);
     drawYAxisTickLabels(
       0,
       this.maxHeight,
@@ -151,6 +152,7 @@ function ColumnChart() {
       this.mapValuesToHeight.bind(this),
       0
     );
+    textSize(16);
 
     // Draw x and y axis.
     drawAxis(this.layout);
@@ -177,11 +179,13 @@ function ColumnChart() {
       fill(0);
       noStroke();
       textAlign("center", "bottom");
+      textSize(12);
       text(
         columnValue.name,
         lineX + lineWidth * 0.5,
         this.layout.bottomMargin + 20
       );
+      textSize(16);
 
       // Draw bar.
       fill(colorTheme[i % colorTheme.length]);

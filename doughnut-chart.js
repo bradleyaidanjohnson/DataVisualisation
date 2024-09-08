@@ -58,6 +58,19 @@ Arrays must be the same length!`);
         lastAngle + angles[i] + 0.001
       ); // Hack for 0!
 
+      // adapted from https://gist.github.com/netgfx/0f25a166fa0354049cd02c8d6c768e50
+      var textX =
+        this.x +
+        (this.diameter / 3) *
+          Math.cos((lastAngle + lastAngle + angles[i] + 0.001) / 2);
+      var textY =
+        this.y +
+        (this.diameter / 3) *
+          Math.sin((lastAngle + lastAngle + angles[i] + 0.001) / 2);
+      fill(255, 255, 255);
+      textAlign("center", "center");
+      text(`${data[i].toFixed(1)}%`, textX, textY);
+
       if (labels) {
         this.makeLegendItem(labels[i], i, colour);
       }

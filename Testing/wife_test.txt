@@ -11,7 +11,7 @@ column chart demo - are the sales numbers random? this is the easiest to underst
 
 Bar chart - easy to understand / no ?'s
 
-waterfall chart - i can comprehend what it is telling me at all! 
+waterfall chart - i cant comprehend what it is telling me at all! 
 
 combo chart - seen this before easy to understand 
 
