@@ -65,15 +65,93 @@ function BarChart() {
     );
   };
 
+  this.chartOptions = {
+    "Simple Bar Chart": "./data/new-data/treemap_makeup.csv",
+    "Monthly Sales": "./data/new-data/bc_ monthly_sales.csv",
+    "Monthly Rainfall": "./data/new-data/bc_ monthly_rainfall.csv",
+    "Store Revenue": "./data/new-data/bc_ store_revenue.csv",
+    "Monthly Temperatures": "./data/new-data/bc_monthly_temp.csv",
+    Visits: "./data/new-data/bc_visits.csv",
+    Other: "./data/new-data/100_stacked_area_chart_data.csv",
+    "Market Share": "./data/new-data/100_stacked_area_market_share.csv",
+    "Simple Stacked Area Chart": "./data/new-data/stacked_area_chart_data.csv",
+    "Monthly Expenses": "./data/new-data/stacked_area_monthly_expenses.csv",
+    "Annual Volatile": "./data/new-data/stacked_area_annual_volatile.csv",
+    "Monthly Random Spikes": "./data/new-data/stacked_area_monthly_random.csv",
+    "Quarterly Sharp": "./data/new-data/stacked_area_quarterly_sharp.csv",
+    "Weekly Chaotic": "./data/new-data/stacked_area_weekly_chaotic.csv",
+  };
+
+  this.currentSelection = "Simple Bar Chart";
+
+  // Property to represent whether data has been loaded.
+  this.loaded = false;
+
+  // Preload the data. This function is called automatically by the
+  // gallery when a visualisation is added.
+  this.preload = function () {
+    var self = this;
+    this.data = loadTable(
+      this.chartOptions[this.currentSelection],
+      "csv",
+      "header",
+      // Callback function to set the value
+      // this.loaded to true.
+      function (table) {
+        self.loaded = true;
+      }
+    );
+  };
+
+  this.setup = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    }
+
+    // Create a select DOM element.
+    this.select = createSelect();
+
+    // Set select position.
+    this.select.position(350, 700);
+
+    // Fill the options with all company names.
+    for (var optionKey in this.chartOptions) {
+      this.select.option(optionKey);
+    }
+    // Font defaults.
+    textSize(16);
+  };
+
+  this.destroy = function () {
+    this.select.remove();
+  };
+
   // Draw function
   this.draw = function () {
     if (!this.loaded) {
       console.log("Data not yet loaded");
       return;
+    } else if (this.select.value() !== this.currentSelection) {
+      this.currentSelection = this.select.value();
+      this.data = loadTable(
+        this.chartOptions[this.currentSelection],
+        "csv",
+        "header",
+        // Callback function to set the value
+        // this.loaded to true.
+        function (table) {
+          self.loaded = true;
+        }
+      );
+      return;
     }
+
     // Store labels
     this.xAxisLabel = this.data.columns[1];
     this.yAxisLabel = this.data.columns[0];
+
+    this.maxWidth = 0;
     // Set max width to the highest value
     for (var i = 0; i < this.data.getRowCount(); i++) {
       if (this.data.getNum(i, 1) > this.maxWidth) {
