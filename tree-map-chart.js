@@ -45,7 +45,7 @@ function TreeMapChart() {
     // Layout the row in the current rectangle
     layoutRow(row) {
       // Calculate total area of the current row
-      let totalRowArea = row.reduce((sum, r) => sum + r.area, 0);
+      let totalRowArea = row.reduce((sum, r) => sum + r.areaScaled, 0);
       // Row Height and Width
       let rowWidth, rowHeight;
 
@@ -60,7 +60,7 @@ function TreeMapChart() {
         // Create a rect for each in the row
         row.forEach((rect) => {
           rect.width = rowWidth;
-          rect.height = rect.area / rowWidth;
+          rect.height = rect.areaScaled / rowWidth;
           rect.x = currentX;
           rect.y = currentY;
           // Set y for next rect to begin
@@ -82,7 +82,7 @@ function TreeMapChart() {
         // Create a rect for each in the row
         row.forEach((rect) => {
           rect.height = rowHeight;
-          rect.width = rect.area / rowHeight;
+          rect.width = rect.areaScaled / rowHeight;
           rect.x = currentX;
           rect.y = currentY;
           // Set y for next rect to begin
@@ -215,19 +215,19 @@ function TreeMapChart() {
     // Map by that scale
     return data.map((d) => ({
       ...d,
-      area: d.area * scaleFactor,
+      areaScaled: d.area * scaleFactor,
     }));
   };
 
   // Function to calculate the worst aspect ratio for squarify
   this.worst = function (row, w) {
     // Initialise total area variable
-    let totalArea = row.reduce((sum, r) => sum + r.area, 0);
+    let totalArea = row.reduce((sum, r) => sum + r.areaScaled, 0);
     // Square that number
     let s2 = totalArea ** 2;
     // Find the min and max areas
-    let minArea = Math.min(...row.map((r) => r.area));
-    let maxArea = Math.max(...row.map((r) => r.area));
+    let minArea = Math.min(...row.map((r) => r.areaScaled));
+    let maxArea = Math.max(...row.map((r) => r.areaScaled));
     // Return the max of the 2 squarify algorith worst calculations to test aspect ratios
     return Math.max((w ** 2 * maxArea) / s2, s2 / (w ** 2 * minArea));
   };
@@ -277,9 +277,21 @@ function TreeMapChart() {
       fill(255);
       strokeWeight(0);
       // Add the name of the data as a data label
-      textSize(14);
+      textSize(16);
       textAlign(CENTER, CENTER);
-      text(this.arrangement[i].data_name, rectX + rectW / 2, rectY + rectH / 2);
+      text(
+        this.arrangement[i].data_name,
+        rectX + rectW / 2,
+        rectY + rectH / 2 - 15
+      );
+      // Source: https://stackoverflow.com/questions/2901102/how-to-format-a-number-with-commas-as-thousands-separators
+      text(
+        this.arrangement[i].area
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+        rectX + rectW / 2,
+        rectY + rectH / 2 + 15
+      );
       textSize(16);
     }
   };

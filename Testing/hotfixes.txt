@@ -1,0 +1,10 @@
+reduce font of tick labels on column chart y
+reduce font of tick labels on column chart x
+added values to the doughnut chart
+added data labels to waterfall chart
+increased font size is both cluster charts
+increased font size of stacked bar y tick labels
+increased font size of cluster bar y tick labels
+added data labels to treemap
+
+No time to remake the gauge chart.

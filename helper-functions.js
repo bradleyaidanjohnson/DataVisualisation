@@ -65,14 +65,13 @@ function drawAxis(layout, colour = 0) {
 
 function drawSubZeroAxis(layout, colour = 0, min, max) {
   stroke(color(colour));
+  strokeWeight(1);
 
-  // rabge = (layout.bottomMargin - layout.topMargin)
   var range = max - min;
   var subZero = range - max;
   var subZeroPerc = subZero / range;
   var layoutHeight = layout.bottomMargin - layout.topMargin;
   var subZeroPixels = subZeroPerc * layoutHeight;
-  // console.log(subZero);
 
   // x-axis
   line(
@@ -201,7 +200,6 @@ function drawComboAxisLabels(xLabel, yLabel_1, yLabel_2, layout) {
 function drawYAxisTickLabels(min, max, layout, mapFunction, decimalPlaces) {
   // Map function must be passed with .bind(this).
   var range = max - min;
-  // console.log(range);
   var yTickStep = range / layout.numYTickLabels;
 
   fill(0);
@@ -211,7 +209,6 @@ function drawYAxisTickLabels(min, max, layout, mapFunction, decimalPlaces) {
   // Draw all axis tick labels and grid lines.
   for (i = 0; i <= layout.numYTickLabels; i++) {
     var value = min + i * yTickStep;
-    // console.log(value);
     var y = mapFunction(value);
 
     // Add tick label.
@@ -306,9 +303,6 @@ function drawXAxisTickLabel(value, layout, mapFunction) {
   noStroke();
   textAlign("center", "center");
 
-  // Add tick label.
-  // text(value, x, layout.bottomMargin + layout.marginSize / 2);
-
   if (layout.grid) {
     // Add grid line.
     stroke(220);
@@ -327,12 +321,6 @@ function drawAreaXAxisTickLabel(values, layout) {
     var x =
       layout.leftMargin +
       ((layout.rightMargin - layout.leftMargin) / (values.length - 1)) * i;
-    // text(
-    //   values[i],
-    //   layout.leftMargin +
-    //     ((layout.rightMargin - layout.leftMargin) / (values.length - 1)) * i,
-    //   layout.bottomMargin + layout.marginSize / 2
-    // );
     push();
     translate(x, layout.bottomMargin + layout.marginSize / 2);
     rotate(-PI / 3 / 2);
