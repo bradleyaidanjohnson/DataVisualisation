@@ -375,7 +375,7 @@ function WaterfallChart() {
     textAlign("center", "left");
     textSize(min(8, int(this.lineWidth / 3)));
     text(textString, 0, 0);
-    textSize(12);
+    textSize(16);
     // Load canvas
     pop();
   };

@@ -289,6 +289,6 @@ function StackedAreaChart() {
     textAlign("left", "center");
     textSize(10);
     text(label, x + boxWidth + 10, y + boxWidth / 2);
-    textSize(14);
+    textSize(16);
   };
 }

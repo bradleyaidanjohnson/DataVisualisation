@@ -91,5 +91,6 @@ Arrays must be the same length!`);
     textAlign("left", "center");
     textSize(12);
     text(label, x + boxWidth + 10, y + boxWidth / 2);
+    textSize(16);
   };
 }

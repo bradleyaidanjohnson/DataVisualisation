@@ -201,6 +201,8 @@ function TreeMapChart() {
     this.squarify(scaledData, [], initialRectangle);
     // Execute draw rectangles function
     this.drawRectangles();
+
+    strokeWeight(1);
   };
 
   // Scale the data
@@ -262,6 +264,7 @@ function TreeMapChart() {
   };
   // Draw rectangles function
   this.drawRectangles = function () {
+    strokeWeight(0);
     // Loop the arrangement drawing each rect
     for (var i = 0; i < this.arrangement.length; i++) {
       fill(colorTheme[i % colorTheme.length]);
@@ -277,6 +280,7 @@ function TreeMapChart() {
       textSize(14);
       textAlign(CENTER, CENTER);
       text(this.arrangement[i].data_name, rectX + rectW / 2, rectY + rectH / 2);
+      textSize(16);
     }
   };
   // Draw title function

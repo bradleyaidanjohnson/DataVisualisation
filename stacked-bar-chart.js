@@ -136,7 +136,7 @@ function StackedBarChart() {
     }
     // Set axis labels
     this.xAxisLabel = "Value";
-    this.yAxisLabel = this.data.columns[0];
+    this.yAxisLabel = "";
     // Initialise array to hold widths
     var curWidthArray = [];
     this.maxWidth = 0;
@@ -228,7 +228,7 @@ function StackedBarChart() {
         this.layout.leftMargin - 20,
         this.layout.topMargin + lineY
       );
-      textSize(14);
+      textSize(16);
     }
   };
   // Draw title function
@@ -271,6 +271,6 @@ function StackedBarChart() {
     textAlign("left", "center");
     textSize(8);
     text(label, x + boxWidth + 10, y + boxWidth / 2);
-    textSize(14);
+    textSize(16);
   };
 }

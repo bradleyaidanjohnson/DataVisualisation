@@ -182,7 +182,7 @@ function BarChart() {
         this.layout.leftMargin - 20,
         this.layout.topMargin + lineX
       );
-      textSize(14);
+      textSize(16);
 
       // Draw bar.
       fill(colorTheme[i % colorTheme.length]);

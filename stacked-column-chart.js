@@ -46,6 +46,32 @@ function StackedColumnChart() {
     numYTickLabels: 8,
   };
 
+  this.chartOptions = {
+    "Simple Chart": "./data/new-data/bcsc_base.csv",
+    "Performance by Department":
+      "./data/new-data/bcsc_performance_by_department.csv",
+    "Department by Performance":
+      "./data/new-data/bcsc_department._by_performance.csv",
+    "Factory by Production": "./data/new-data/bcsc_production_by_factory.csv",
+    "Production by Factory": "./data/new-data/bcsc_factory_by_production.csv",
+    "Costs and Expenses": "./data/new-data/bcsc_revenue_and_expenses.csv",
+    "Expenses and Costs": "./data/new-data/bcsc_expenses_and_costs.csv",
+    "Revenue by Region": "./data/new-data/bcsc_revenue_by_region.csv",
+    "Region by Revenue": "./data/new-data/bcsc_region_by_revenue.csv",
+    "Profit and Sales by Product":
+      "./data/new-data/bcsc_sales_and_profit_by_product.csv",
+    "Product by Profit and Sales":
+      "./data/new-data/bcsc_product_by_sales_and_profit.csv",
+    "Sales by Category": "./data/new-data/bcsc_sales_by_category.csv",
+    "Category by Sales": "./data/new-data/bcsc_category_by_sales.csv",
+    "Sales by Department": "./data/new-data/bcsc_sales_by_department.csv",
+    "Department by Sales": "./data/new-data/bcsc_department_by_sales.csv",
+    "Sales by Region": "./data/new-data/bcsc_sales_by_region.csv",
+    "Region by Sales": "./data/new-data/bcsc_region_by_sales.csv",
+  };
+
+  this.currentSelection = "Simple Chart";
+
   // Property to represent whether data has been loaded.
   this.loaded = false;
 
@@ -54,7 +80,7 @@ function StackedColumnChart() {
   this.preload = function () {
     var self = this;
     this.data = loadTable(
-      "./data/new-data/segments_table2.csv",
+      this.chartOptions[this.currentSelection],
       "csv",
       "header",
       // Callback function to set the value
@@ -65,16 +91,54 @@ function StackedColumnChart() {
     );
   };
 
+  this.setup = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    }
+
+    // Create a select DOM element.
+    this.select = createSelect();
+
+    // Set select position.
+    this.select.position(350, 700);
+
+    // Fill the options with all company names.
+    for (var optionKey in this.chartOptions) {
+      this.select.option(optionKey);
+    }
+    // Font defaults.
+    textSize(16);
+  };
+
+  this.destroy = function () {
+    this.select.remove();
+  };
+
   // Draw function
   this.draw = function () {
     if (!this.loaded) {
       console.log("Data not yet loaded");
       return;
+    } else if (this.select.value() !== this.currentSelection) {
+      this.currentSelection = this.select.value();
+      this.data = loadTable(
+        this.chartOptions[this.currentSelection],
+        "csv",
+        "header",
+        // Callback function to set the value
+        // this.loaded to true.
+        function (table) {
+          self.loaded = true;
+        }
+      );
+      return;
     }
     // Store labels
-    this.yAxisLabel = this.data.columns[0];
+    this.yAxisLabel = "";
     // Initialise array to hold heights
     var curHeightArray = [];
+    this.maxHeight = 0;
 
     // Loop through finding the height of each column and adding them to array
     // or setting max height if they are the highest
@@ -111,7 +175,7 @@ function StackedColumnChart() {
     // Initiate lineWidth variable to the correct % of canvas height
     var lineWidth =
       (this.layout.rightMargin - this.layout.leftMargin) /
-      this.data.getColumnCount();
+      (this.data.getColumnCount() - 1);
 
     // Loop over every row in the data.
     for (var i = 1; i < this.data.getColumnCount(); i++) {
@@ -213,5 +277,6 @@ function StackedColumnChart() {
     textAlign("left", "center");
     textSize(12);
     text(label, x + boxWidth + 10, y + boxWidth / 2);
+    textSize(16);
   };
 }

@@ -46,6 +46,32 @@ function ClusterColumnChart() {
     numYTickLabels: 8,
   };
 
+  this.chartOptions = {
+    "Simple Chart": "./data/new-data/bcsc_base.csv",
+    "Performance by Department":
+      "./data/new-data/bcsc_performance_by_department.csv",
+    "Department by Performance":
+      "./data/new-data/bcsc_department._by_performance.csv",
+    "Factory by Production": "./data/new-data/bcsc_production_by_factory.csv",
+    "Production by Factory": "./data/new-data/bcsc_factory_by_production.csv",
+    "Costs and Expenses": "./data/new-data/bcsc_revenue_and_expenses.csv",
+    "Expenses and Costs": "./data/new-data/bcsc_expenses_and_costs.csv",
+    "Revenue by Region": "./data/new-data/bcsc_revenue_by_region.csv",
+    "Region by Revenue": "./data/new-data/bcsc_region_by_revenue.csv",
+    "Profit and Sales by Product":
+      "./data/new-data/bcsc_sales_and_profit_by_product.csv",
+    "Product by Profit and Sales":
+      "./data/new-data/bcsc_product_by_sales_and_profit.csv",
+    "Sales by Category": "./data/new-data/bcsc_sales_by_category.csv",
+    "Category by Sales": "./data/new-data/bcsc_category_by_sales.csv",
+    "Sales by Department": "./data/new-data/bcsc_sales_by_department.csv",
+    "Department by Sales": "./data/new-data/bcsc_department_by_sales.csv",
+    "Sales by Region": "./data/new-data/bcsc_sales_by_region.csv",
+    "Region by Sales": "./data/new-data/bcsc_region_by_sales.csv",
+  };
+
+  this.currentSelection = "Simple Chart";
+
   // Property to represent whether data has been loaded.
   this.loaded = false;
 
@@ -54,7 +80,7 @@ function ClusterColumnChart() {
   this.preload = function () {
     var self = this;
     this.data = loadTable(
-      "./data/new-data/segments_table2.csv",
+      this.chartOptions[this.currentSelection],
       "csv",
       "header",
       // Callback function to set the value
@@ -65,15 +91,53 @@ function ClusterColumnChart() {
     );
   };
 
-  // Draw function
-  this.draw = function () {
+  this.setup = function () {
     if (!this.loaded) {
       console.log("Data not yet loaded");
       return;
     }
 
+    // Create a select DOM element.
+    this.select = createSelect();
+
+    // Set select position.
+    this.select.position(350, 700);
+
+    // Fill the options with all company names.
+    for (var optionKey in this.chartOptions) {
+      this.select.option(optionKey);
+    }
+    // Font defaults.
+    textSize(16);
+  };
+
+  this.destroy = function () {
+    this.select.remove();
+  };
+
+  // Draw function
+  this.draw = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    } else if (this.select.value() !== this.currentSelection) {
+      this.currentSelection = this.select.value();
+      this.data = loadTable(
+        this.chartOptions[this.currentSelection],
+        "csv",
+        "header",
+        // Callback function to set the value
+        // this.loaded to true.
+        function (table) {
+          self.loaded = true;
+        }
+      );
+      return;
+    }
+
     // Store labels
-    this.yAxisLabel = this.data.columns[0];
+    this.yAxisLabel = "";
+    this.maxHeight = 0;
     // Loop over ther columns and rows to find the column with the greatest sum
     for (var i = 1; i < this.data.getColumnCount(); i++) {
       for (var j = 0; j < this.data.getRowCount(); j++) {
@@ -104,17 +168,14 @@ function ClusterColumnChart() {
     // Set variable for line width based on canvas
     var lineWidth =
       (this.layout.rightMargin - this.layout.leftMargin) /
-      this.data.getColumnCount();
+      (this.data.getColumnCount() - 1);
 
     // Loop over every row in the data.
     for (var i = 1; i < this.data.getColumnCount(); i++) {
-      // set diff to 0 for each column
-      diff = 0;
       // Loop every row per column
+      // Calculate the x position
+      var lineX = lineWidth * (i - 1) + this.layout.leftMargin;
       for (var j = 0; j < this.data.getRowCount(); j++) {
-        // Calculate the x position
-        var lineX = lineWidth * (i - 1) + this.layout.leftMargin;
-
         // Create an object that stores data from the current row.
         var columnValue = {
           // Add each row's data to the columnValue variable
@@ -130,6 +191,7 @@ function ClusterColumnChart() {
             (this.layout.bottomMargin - this.layout.topMargin) +
           this.layout.topMargin;
         let w = lineWidth / this.data.getRowCount();
+        // let w = lineWidth;
         let h =
           (this.layout.bottomMargin - this.layout.topMargin) *
           (columnValue.value / this.maxHeight);
@@ -139,10 +201,9 @@ function ClusterColumnChart() {
         strokeWeight(0);
         fill("#FFFFFF");
         textSize(8);
+        textAlign("center", "bottom");
         text(columnValue.value, x + w / 2, y + h / 2);
         textSize(14);
-        // add h to diff
-        diff += h;
         // Draw legend
         if (i < 2) {
           this.makeLegendItem(

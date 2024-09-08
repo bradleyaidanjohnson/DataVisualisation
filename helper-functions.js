@@ -270,7 +270,7 @@ function drawComboYAxisTickLabels(
     // Add tick label.
     text(value.toFixed(decimalPlaces2), layout.rightMargin + layout.pad * 7, y);
   }
-  textSize(14);
+  textSize(16);
 }
 
 function drawXAxisTickLabelsFlip(min, max, layout, mapFunction, decimalPlaces) {
@@ -344,5 +344,5 @@ function drawAreaXAxisTickLabel(values, layout) {
       line(x, layout.topMargin, x, layout.bottomMargin);
     }
   }
-  textSize(14);
+  textSize(16);
 }
