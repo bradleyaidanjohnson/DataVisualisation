@@ -295,4 +295,28 @@ function TreeMapChart() {
       this.layout.topMargin - this.layout.marginSize / 2
     );
   };
+  // Organise heirarchies function
+  this.treeHeirarchy = function () {
+    // Initialise an object to hold sets
+    var columnUniqueValues = [];
+    // Loop all columns and store their returned arrays as a set in the object, with the column id as key
+    for (var i = 0; i < this.data.columnCount(); i++) {
+      var tempSet = new Set(this.data.getColumn(i));
+      columnUniqueValues[i] = [...tempSet];
+    }
+    // Check if any of a given set appears for anoher row multiple times, then it is higher
+    function detectHeirarchyRec(arrayOfUniCols) {
+      // for (var j = 1; j < arrayOfUniCols.length; j++){
+      //   var count = 0
+      //   for (var k = 0; k < arrayOfUniCols[j - 1].length; k++){
+      //     if()
+      //   }
+      // }
+      // if (arrayOfUniCols.size === 0) {
+      //   return [...arrayOfUniCols][0];
+      // }
+      // return detectHeirarchyRec(something);
+    }
+    return heirarchies;
+  };
 }
