@@ -50,6 +50,20 @@ function HundredStackedAreaChart() {
     numYTickLabels: 10,
   };
 
+  this.chartOptions = {
+    "Simple 100% Stacked Area Chart":
+      "./data/new-data/100_stacked_area_chart_data.csv",
+    "Market Share": "./data/new-data/100_stacked_area_market_share.csv",
+    "Simple Stacked Area Chart": "./data/new-data/stacked_area_chart_data.csv",
+    "Monthly Expenses": "./data/new-data/stacked_area_monthly_expenses.csv",
+    "Annual Volatile": "./data/new-data/stacked_area_annual_volatile.csv",
+    "Monthly Random Spikes": "./data/new-data/stacked_area_monthly_random.csv",
+    "Quarterly Sharp": "./data/new-data/stacked_area_quarterly_sharp.csv",
+    "Weekly Chaotic": "./data/new-data/stacked_area_weekly_chaotic.csv",
+  };
+
+  this.currentSelection = "Simple 100% Stacked Area Chart";
+
   // Property to represent whether data has been loaded.
   this.loaded = false;
 
@@ -58,7 +72,7 @@ function HundredStackedAreaChart() {
   this.preload = function () {
     var self = this;
     this.data = loadTable(
-      "./data/new-data/100_stacked_area_chart_data.csv",
+      this.chartOptions[this.currentSelection],
       "csv",
       "header",
       // Callback function to set the value
@@ -70,6 +84,48 @@ function HundredStackedAreaChart() {
   };
 
   this.setup = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    }
+
+    // Create a select DOM element.
+    this.select = createSelect();
+
+    // Set select position.
+    this.select.position(350, 700);
+
+    // Fill the options with all company names.
+    for (var optionKey in this.chartOptions) {
+      this.select.option(optionKey);
+    }
+    // Font defaults.
+    textSize(16);
+  };
+
+  this.destroy = function () {
+    this.select.remove();
+  };
+
+  this.draw = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    } else if (this.select.value() !== this.currentSelection) {
+      this.currentSelection = this.select.value();
+      this.data = loadTable(
+        this.chartOptions[this.currentSelection],
+        "csv",
+        "header",
+        // Callback function to set the value
+        // this.loaded to true.
+        function (table) {
+          self.loaded = true;
+        }
+      );
+      return;
+    }
+
     // Font defaults.
     textSize(16);
 
@@ -91,14 +147,6 @@ function HundredStackedAreaChart() {
 
     this.numXLabels = max(0, this.xLabels.length - 1);
     this.xAxisLabel = this.data.columns[0];
-  };
-  this.destroy = function () {};
-
-  this.draw = function () {
-    if (!this.loaded) {
-      console.log("Data not yet loaded");
-      return;
-    }
 
     // Draw the title above the plot.
     this.drawTitle();
