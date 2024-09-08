@@ -200,7 +200,7 @@ function ClusterColumnChart() {
         rect(x, y, w, h);
         strokeWeight(0);
         fill("#FFFFFF");
-        textSize(8);
+        textSize(11);
         textAlign("center", "bottom");
         text(columnValue.value, x + w / 2, y + h / 2);
         textSize(14);

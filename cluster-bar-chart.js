@@ -199,7 +199,7 @@ function ClusterBarChart() {
         rect(x, y, w, h);
         strokeWeight(0);
         fill("#FFFFFF");
-        textSize(9);
+        textSize(11);
         textAlign("center", "center");
         text(columnValue.value, x + w / 2, y + h / 2);
         textSize(16);
@@ -216,11 +216,11 @@ function ClusterBarChart() {
       // Draw the columnValue name on the left margin.
       fill(0);
       noStroke();
-      textAlign("center", "bottom");
-      textSize(8);
+      textAlign("left", "bottom");
+      textSize(11);
       text(
         columnValue.name,
-        this.layout.leftMargin - 20,
+        this.layout.leftMargin - 60,
         this.layout.topMargin + lineY
       );
       textSize(16);

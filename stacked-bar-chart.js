@@ -221,11 +221,11 @@ function StackedBarChart() {
       // Draw the columnValue name on the left margin.
       fill(0);
       noStroke();
-      textAlign("center", "bottom");
-      textSize(8);
+      textAlign("left", "center");
+      textSize(11);
       text(
         columnValue.name,
-        this.layout.leftMargin - 20,
+        this.layout.leftMargin - 60,
         this.layout.topMargin + lineY
       );
       textSize(16);
