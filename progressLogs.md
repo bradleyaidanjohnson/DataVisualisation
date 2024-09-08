@@ -54,7 +54,7 @@ Complete the area, stacked area, and 100% stacked area charts, and begin testing
 
 ### Are you on target to successfully complete your project? If you aren’t on target, how will you address the issue?
 
-Slightly behind schedule due to the complexity of the tree map and additional area charts, but I am making efforts to catch up.
+Slightly behind schedule due to the complexity of the tree map and additional area charts, but I am making efforts to catch up. I will not implement upload of csv files, and instead create multiple csvs per chart to showcase the capabilities/modularity of each chart I have made. This will be easier to implement initially. And will not require extensive testing on the back end
 
 ## 1/9/24
 

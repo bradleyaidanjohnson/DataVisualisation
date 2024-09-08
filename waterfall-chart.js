@@ -170,6 +170,7 @@ function WaterfallChart() {
     this.drawTitle();
 
     // Draw all y-axis labels.
+    textSize(10);
     drawYAxisTickLabels(
       this.minHeight,
       this.maxHeight,
@@ -177,6 +178,7 @@ function WaterfallChart() {
       this.mapValuesToHeight.bind(this),
       0
     );
+    textSize(16);
 
     // Draw x and y axis.
     drawSubZeroAxis(this.layout, 0, this.minHeight, this.maxHeight);
