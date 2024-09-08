@@ -48,6 +48,19 @@ function WaterfallChart() {
     numYTickLabels: 8,
   };
 
+  this.chartOptions = {
+    "Simple Waterfall": "./data/new-data/waterfall.csv",
+    "Categorical Waterfall": "./data/new-data/waterfall-cat.csv",
+    "Quarterly Revenue": "./data/new-data/waterfall_quarterly_revenue.csv",
+    "Daily Profit/Loss": "./data/new-data/waterfall_daily_profit_loss.csv",
+    "Annual Performance": "./data/new-data/waterfall_annual_performance.csv",
+    "Monthly Budget": "./data/new-data/waterfall_monthly_budget.csv",
+    "Project Phases": "./data/new-data/waterfall_project_phases.csv",
+    "Seasonal Sales": "./data/new-data/waterfall_seasonal_sales.csv",
+  };
+
+  this.currentSelection = "Simple Waterfall";
+
   // Property to represent whether data has been loaded.
   this.loaded = false;
 
@@ -56,8 +69,7 @@ function WaterfallChart() {
   this.preload = function () {
     var self = this;
     this.data = loadTable(
-      // "./data/new-data/waterfall.csv",
-      "./data/new-data/waterfall-cat.csv",
+      this.chartOptions[this.currentSelection],
       "csv",
       "header",
       // Callback function to set the value
@@ -68,12 +80,48 @@ function WaterfallChart() {
     );
   };
 
+  this.setup = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    }
+
+    // Create a select DOM element.
+    this.select = createSelect();
+
+    // Set select position.
+    this.select.position(350, 700);
+
+    // Fill the options with all company names.
+    for (var optionKey in this.chartOptions) {
+      this.select.option(optionKey);
+    }
+  };
+
+  this.destroy = function () {
+    this.select.remove();
+  };
+
   // Draw function
   this.draw = function () {
+    // Set max and min heights for canvas
     this.maxHeight = 0;
     this.minHeight = 0;
     if (!this.loaded) {
       console.log("Data not yet loaded");
+      return;
+    } else if (this.select.value() !== this.currentSelection) {
+      this.currentSelection = this.select.value();
+      this.data = loadTable(
+        this.chartOptions[this.currentSelection],
+        "csv",
+        "header",
+        // Callback function to set the value
+        // this.loaded to true.
+        function (table) {
+          self.loaded = true;
+        }
+      );
       return;
     }
     // Initiate variables to hold the number of rows

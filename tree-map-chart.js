@@ -99,12 +99,23 @@ function TreeMapChart() {
   // Property to represent whether data has been loaded.
   this.loaded = false;
 
+  this.chartOptions = {
+    "Simple Tree Map": "./data/new-data/treemap_makeup.csv",
+    "Platform Downloads": "./data/new-data/treemap_platform_downloads.csv",
+    "Restaurant Sales": "./data/new-data/treemap_restaurant_sales.csv",
+    "Department Sales": "./data/new-data/treemap_department_sales.csv",
+    "Division Sales": "./data/new-data/treemap_division_sales.csv",
+    "Genre Revenue": "./data/new-data/treemap_genre_revenue.csv",
+  };
+
+  this.currentSelection = "Simple Tree Map";
+
   // Preload the data. This function is called automatically by the gallery when a visualisation is added.
   this.preload = function () {
     var self = this;
     this.data = loadTable(
       // "./data/new-data/FTSE100.csv",
-      "./data/new-data/makeup.csv",
+      this.chartOptions[this.currentSelection],
       "csv",
       "header",
       // Callback function to set the value
@@ -115,10 +126,45 @@ function TreeMapChart() {
     );
   };
 
+  this.setup = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    }
+
+    // Create a select DOM element.
+    this.select = createSelect();
+
+    // Set select position.
+    this.select.position(350, 700);
+
+    // Fill the options with all company names.
+    for (var optionKey in this.chartOptions) {
+      this.select.option(optionKey);
+    }
+  };
+
+  this.destroy = function () {
+    this.select.remove();
+  };
+
   // Draw function
   this.draw = function () {
     if (!this.loaded) {
       console.log("Data not yet loaded");
+      return;
+    } else if (this.select.value() !== this.currentSelection) {
+      this.currentSelection = this.select.value();
+      this.data = loadTable(
+        this.chartOptions[this.currentSelection],
+        "csv",
+        "header",
+        // Callback function to set the value
+        // this.loaded to true.
+        function (table) {
+          self.loaded = true;
+        }
+      );
       return;
     }
     // Draw the title above the plot.

@@ -1,0 +1,5 @@
+Phase,Budget,Costs,Overruns,Delays
+Planning,10000,-5000,-200,5
+Development,25000,-12000,-1000,10
+Testing,15000,-7000,-500,8
+Deployment,20000,-9000,-1500,6
