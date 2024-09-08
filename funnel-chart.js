@@ -34,6 +34,23 @@ function FunnelChart() {
     },
   };
 
+  this.chartOptions = {
+    "Simple Funnel Chart": "./data/new-data/funnel-demo.csv",
+    "2 Stages": "./data/new-data/funnel-2stage.csv",
+    "Gradual Decline Many Stages":
+      "./data/new-data/funnel-gradual_manystages.csv",
+    "Narrow Few Stages": "./data/new-data/funnel-narrow_few.csv",
+    "Narrow Moderate Decline": "./data/new-data/funnel-narrow_moderate.csv",
+    "Narrow Small Sample Size": "./data/new-data/funnel-narrow_smallsample.csv",
+    "Wide Gradual Decline": "./data/new-data/funnel-wide_gradual.csv",
+    "Wide Many Stages": "./data/new-data/funnel-wide_many.csv",
+    "Wide Minimal Decline": "./data/new-data/funnel-wide_minimal.csv",
+    "Wide Sharp Decline": "./data/new-data/funnel-wide_sharp.csv",
+    "Wide Variable Decline": "./data/new-data/funnel-wide_variable.csv",
+  };
+
+  this.currentSelection = "Simple Funnel Chart";
+
   // Property to represent whether data has been loaded.
   this.loaded = false;
 
@@ -42,7 +59,7 @@ function FunnelChart() {
   this.preload = function () {
     var self = this;
     this.data = loadTable(
-      "./data/new-data/funnel-demo.csv",
+      this.chartOptions[this.currentSelection],
       "csv",
       "header",
       // Callback function to set the value
@@ -53,15 +70,53 @@ function FunnelChart() {
     );
   };
 
+  this.setup = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    }
+
+    // Create a select DOM element.
+    this.select = createSelect();
+
+    // Set select position.
+    this.select.position(350, 700);
+
+    // Fill the options with all company names.
+    for (var optionKey in this.chartOptions) {
+      this.select.option(optionKey);
+    }
+    // Font defaults.
+    textSize(16);
+  };
+
+  this.destroy = function () {
+    this.select.remove();
+  };
+
   // Draw function
   this.draw = function () {
     if (!this.loaded) {
       console.log("Data not yet loaded");
       return;
+    } else if (this.select.value() !== this.currentSelection) {
+      this.currentSelection = this.select.value();
+      this.data = loadTable(
+        this.chartOptions[this.currentSelection],
+        "csv",
+        "header",
+        // Callback function to set the value
+        // this.loaded to true.
+        function (table) {
+          self.loaded = true;
+        }
+      );
+      return;
     }
     // Set axis labels
     this.xAxisLabel = this.data.columns[1];
     this.yAxisLabel = this.data.columns[0];
+    this.maxWidth = 0;
     // Loop values to set maxwidth
     for (var i = 0; i < this.data.getRowCount(); i++) {
       if (this.data.getNum(i, 1) > this.maxWidth) {
@@ -100,11 +155,11 @@ function FunnelChart() {
       // Draw the columnValue name on the left margin.
       fill(0);
       noStroke();
-      textAlign("center", "center");
+      textAlign("left", "center");
       textSize(14);
       text(
         columnValue.name,
-        this.layout.leftMargin - 30,
+        this.layout.leftMargin - 150,
         lineX + lineHeight / 2
       );
       textSize(14);
@@ -115,7 +170,7 @@ function FunnelChart() {
       textAlign("center", "center");
       textSize(14);
       text(
-        ((columnValue.value / this.maxWidth) * 100).toFixed(2).toString() + "%",
+        ((columnValue.value / this.maxWidth) * 100).toFixed(1).toString() + "%",
         this.layout.rightMargin + 30,
         lineX + lineHeight / 2
       );

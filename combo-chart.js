@@ -127,8 +127,8 @@ function ComboChart() {
     textSize(16);
 
     // Set min and max x values
-    this.startXVal = this.data.getNum(0, 0);
-    this.endXVal = this.data.getNum(this.data.getRowCount() - 1, 0);
+    this.startXVal = 0;
+    this.endXVal = this.data.getRowCount() - 1;
 
     // Dynamically set x tick labels
     numXTickLabels = this.data.getRowCount() + 1;
@@ -221,18 +221,18 @@ function ComboChart() {
     for (var i = 0; i < numPoints; i++) {
       // Create an object to store data for the current year.
       var current = {
-        year: this.data.getNum(i, 0),
-        returnsPerc: this.data.getNum(i, 2),
+        a: i,
+        b: this.data.getNum(i, 2),
       };
       // If this is the first loop, skip drawing the line as there is no origin
       if (previous != null) {
         // Draw line segment connecting previous to current
         stroke(0);
         line(
-          this.mapXValToWidth(previous.year),
-          this.mapValuesToLineHeight(previous.returnsPerc),
-          this.mapXValToWidth(current.year),
-          this.mapValuesToLineHeight(current.returnsPerc)
+          this.mapXValToWidth(previous.a),
+          this.mapValuesToLineHeight(previous.b),
+          this.mapXValToWidth(current.a),
+          this.mapValuesToLineHeight(current.b)
         );
       }
 
