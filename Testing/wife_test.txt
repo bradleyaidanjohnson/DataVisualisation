@@ -1,0 +1,32 @@
+
+climate change - dont know what it is trying to tell me / there is a symbol i have no idea what that is / no years stated 
+
+Area chart demo - What is the value? seasonal sales...what do those numbers mean? stocks - finance is missing entirely off the graph 
+
+stacked area chart demo - what does the value mean? what is it measuring 
+
+100% stacked area chart - all fine, understand everything 
+
+column chart demo - are the sales numbers random? this is the easiest to understand graph  / monthly sales how do i find out what the products actually are? 
+
+Bar chart - easy to understand / no ?'s
+
+waterfall chart - i can comprehend what it is telling me at all! 
+
+combo chart - seen this before easy to understand 
+
+funnel chart - easy to understand 
+
+doughnut chart - no comments all fine - maybe some actual numbers within the chart 
+
+stacked chart - cant comprehend at all 
+
+cluster - fine, numbers are really hard to read though 
+
+stacked bar - numbers on the left are tiny 
+
+cluster bar - so much tiny info, my eyes glazed over  
+
+tree map - apart from it being products would not be able to decipher any info from this really at all 
+
+gage - fine but just dont like its format at all 
