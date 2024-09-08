@@ -244,6 +244,16 @@ function WaterfallChart() {
           (this.layout.bottomMargin - this.layout.topMargin) *
             (columnValue.value / this.heightVal)
         );
+
+        fill(0);
+        text(
+          columnValue.value,
+          lineX + this.lineWidth * 0.5,
+          columnTop +
+            ((this.layout.bottomMargin - this.layout.topMargin) *
+              (columnValue.value / this.heightVal)) /
+              2
+        );
       }
       // Logic for categorical waterfall chart
     } else if (colCount > 2) {
@@ -304,6 +314,18 @@ function WaterfallChart() {
             (this.layout.bottomMargin - this.layout.topMargin) *
               (columnValue.value / this.heightVal)
           );
+
+          fill("#FFFFFF");
+          textSize(9);
+          text(
+            columnValue.value,
+            lineX + this.lineWidth * 0.5,
+            columnTop +
+              ((this.layout.bottomMargin - this.layout.topMargin) *
+                (columnValue.value / this.heightVal)) /
+                2
+          );
+          textSize(16);
         }
         // Draw a total rect outside the column loop
         var lineX =
@@ -340,6 +362,18 @@ function WaterfallChart() {
           (this.layout.bottomMargin - this.layout.topMargin) *
             (columnValue.value / this.heightVal)
         );
+
+        fill("#FFFFFF");
+        textSize(9);
+        text(
+          columnValue.value,
+          lineX + this.lineWidth * 0.5,
+          columnTop +
+            ((this.layout.bottomMargin - this.layout.topMargin) *
+              (columnValue.value / this.heightVal)) /
+              2
+        );
+        textSize(16);
       }
     }
   };
