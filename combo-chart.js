@@ -46,6 +46,21 @@ function ComboChart() {
     numYTickLabels: 8,
   };
 
+  this.chartOptions = {
+    "Simple Combo Chart": "./data/new-data/makeup-combo.csv",
+    "Expenses vs Expense Ratio":
+      "./data/new-data/combo_expenses_expense_ratio.csv",
+    "Production vs Efficiency Rate":
+      "./data/new-data/combo_production_efficiency_rate.csv",
+    "Revenue vs Profit Margin":
+      "./data/new-data/combo_revenue_profit_margin.csv",
+    "Sales vs Growth": "./data/new-data/combo_sales_growth.csv",
+    "Traffic vs Conversion Rate":
+      "./data/new-data/combo_traffic_conversion_rate.csv",
+  };
+
+  this.currentSelection = "Simple Combo Chart";
+
   // Property to represent whether data has been loaded.
   this.loaded = false;
 
@@ -54,7 +69,7 @@ function ComboChart() {
   this.preload = function () {
     var self = this;
     this.data = loadTable(
-      "./data/new-data/makeup-combo.csv",
+      this.chartOptions[this.currentSelection],
       "csv",
       "header",
       // Callback function to set the value
@@ -66,6 +81,48 @@ function ComboChart() {
   };
 
   this.setup = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    }
+
+    // Create a select DOM element.
+    this.select = createSelect();
+
+    // Set select position.
+    this.select.position(350, 700);
+
+    // Fill the options with all company names.
+    for (var optionKey in this.chartOptions) {
+      this.select.option(optionKey);
+    }
+    // Font defaults.
+    textSize(16);
+  };
+
+  this.destroy = function () {
+    this.select.remove();
+  };
+
+  // Draw function
+  this.draw = function () {
+    if (!this.loaded) {
+      console.log("Data not yet loaded");
+      return;
+    } else if (this.select.value() !== this.currentSelection) {
+      this.currentSelection = this.select.value();
+      this.data = loadTable(
+        this.chartOptions[this.currentSelection],
+        "csv",
+        "header",
+        // Callback function to set the value
+        // this.loaded to true.
+        function (table) {
+          self.loaded = true;
+        }
+      );
+      return;
+    }
     // Font defaults.
     textSize(16);
 
@@ -75,18 +132,12 @@ function ComboChart() {
 
     // Dynamically set x tick labels
     numXTickLabels = this.data.getRowCount() + 1;
-  };
-
-  // Draw function
-  this.draw = function () {
-    if (!this.loaded) {
-      console.log("Data not yet loaded");
-      return;
-    }
     // Set labels
     this.xAxisLabel = this.data.columns[0];
     this.yAxisLabel1 = this.data.columns[1];
     this.yAxisLabel2 = this.data.columns[2];
+    this.maxHeight = 0;
+    this.maxHeight2 = 0;
     // Loop rows for both max values
     for (var i = 0; i < this.data.getRowCount(); i++) {
       if (this.data.getNum(i, 1) > this.maxHeight) {

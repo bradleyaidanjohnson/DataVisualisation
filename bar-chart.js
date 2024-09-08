@@ -46,25 +46,6 @@ function BarChart() {
     numYTickLabels: 8,
   };
 
-  // Property to represent whether data has been loaded.
-  this.loaded = false;
-
-  // Preload the data. This function is called automatically by the
-  // gallery when a visualisation is added.
-  this.preload = function () {
-    var self = this;
-    this.data = loadTable(
-      "./data/new-data/treemap_makeup.csv",
-      "csv",
-      "header",
-      // Callback function to set the value
-      // this.loaded to true.
-      function (table) {
-        self.loaded = true;
-      }
-    );
-  };
-
   this.chartOptions = {
     "Simple Bar Chart": "./data/new-data/treemap_makeup.csv",
     "Monthly Sales": "./data/new-data/bc_ monthly_sales.csv",
