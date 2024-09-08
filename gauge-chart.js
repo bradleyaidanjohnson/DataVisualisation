@@ -158,6 +158,7 @@ function GaugeChart(x, y, diameter) {
       dataLabelCoords.current[0],
       dataLabelCoords.current[1]
     );
+    strokeWeight(1);
 
     // Loop through coords to draw data labels in the correct places
     for (let key in dataLabelCoords) {

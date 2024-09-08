@@ -54,7 +54,7 @@ function BarChart() {
   this.preload = function () {
     var self = this;
     this.data = loadTable(
-      "./data/new-data/makeup.csv",
+      "./data/new-data/treemap_makeup.csv",
       "csv",
       "header",
       // Callback function to set the value
